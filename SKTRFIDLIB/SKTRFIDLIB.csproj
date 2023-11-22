@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A5AFEA9E-CC59-448D-9249-77304148AFD1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SKTRFIDLIB</RootNamespace>
+    <AssemblyName>SKTRFIDLIB</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnifiedAutomation.UaBase, Version=3.4.0.0, Culture=neutral, PublicKeyToken=90c158e6f23d82c1, processorArchitecture=MSIL">
+      <HintPath>..\packages\UnifiedAutomation.UaBase.3.4.0\lib\net45\UnifiedAutomation.UaBase.dll</HintPath>
+    </Reference>
+    <Reference Include="UnifiedAutomation.UaClient, Version=3.4.0.0, Culture=neutral, PublicKeyToken=90c158e6f23d82c1, processorArchitecture=MSIL">
+      <HintPath>..\packages\UnifiedAutomation.UaClient.3.4.0\lib\net45\UnifiedAutomation.UaClient.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Converter\BooleanAndConverter.cs" />
+    <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converter\ByteLengthInHexLengthConverter.cs" />
+    <Compile Include="Converter\InvertBoolConverter.cs" />
+    <Compile Include="Converter\ListViewCountNumberConverter.cs" />
+    <Compile Include="Model\Opc\AutoIdIdentifiers.cs" />
+    <Compile Include="Model\Opc\AutoIdTypes.cs" />
+    <Compile Include="Model\Reader.cs" />
+    <Compile Include="Model\ReaderEvent.cs" />
+    <Compile Include="Model\ReaderProperty.cs" />
+    <Compile Include="Model\RfidTag.cs" />
+    <Compile Include="Model\Sighting.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\EventInfoArgs.cs" />
+    <Compile Include="Service\OpcUaService.cs" />
+    <Compile Include="Service\OpcUaServiceException.cs" />
+    <Compile Include="Service\OpcUaServiceScanResult.cs" />
+    <Compile Include="Service\OpcUaStatusCode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="License\License.lic" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Model\Opc\AutoIdGeneratedFiles.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
