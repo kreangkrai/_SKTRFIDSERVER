@@ -87,8 +87,8 @@ namespace SKTRFIDLIB.Service
             _session = new Session
             {
                 UseDnsNameAndPortFromDiscoveryUrl = true,
-                SessionTimeout = int.MaxValue,
-                WatchdogTimeout = int.MaxValue
+                SessionTimeout = 60000 * 5,
+
             };
 
             try
@@ -299,18 +299,19 @@ namespace SKTRFIDLIB.Service
 
             StatusCode statusCode;
             List<Variant> outputArguments;
+
             try
             {
                 statusCode = _session.Call(
                 reader.NodeId, //Ident 0 //NodeId.Parse("ns=3;i=5024")
                 GetMethodNodeId(reader.NodeId, AIM.AutoId.BrowseNames.Scan), //Scan method
                 inputArguments,
-                new RequestSettings() { OperationTimeout = int.MaxValue },
+                new RequestSettings() { OperationTimeout = 600000 },
                 out List<StatusCode> inputArgumentErrors,
                 out outputArguments);
             }
             catch (Exception e)
-            {
+            {               
                 throw new OpcUaServiceException(e.Message, e);
             }
 
@@ -396,7 +397,7 @@ namespace SKTRFIDLIB.Service
                    reader.NodeId,
                    GetMethodNodeId(reader.NodeId, AIM.AutoId.BrowseNames.Scan), //Scan method
                    inputArguments,
-                   new RequestSettings() { OperationTimeout = int.MaxValue },
+                   new RequestSettings() { OperationTimeout = 60000 * 10 },
                    out List<StatusCode> inputArgumentErrors,
                    out outputArguments);
             }
@@ -482,7 +483,7 @@ namespace SKTRFIDLIB.Service
                     reader.NodeId,
                     GetMethodNodeId(reader.NodeId, AIM.AutoId.BrowseNames.ScanStart),
                     inputArguments,
-                    new RequestSettings() { OperationTimeout = int.MaxValue },
+                    new RequestSettings() { OperationTimeout = 60000 * 10 },
                     out List<StatusCode> inputArgumentErrors,
                     out outputArguments);
             }
@@ -605,7 +606,7 @@ namespace SKTRFIDLIB.Service
                 reader.NodeId,
                 GetMethodNodeId(reader.NodeId, AIM.AutoId.BrowseNames.ReadTag),
                 inputArguments,
-                new RequestSettings() { OperationTimeout = 10000 },
+                new RequestSettings() { OperationTimeout = 60000 * 10 },
                 out List<StatusCode> inputArgumentErrors,
                 out outputArguments);
             }
@@ -707,7 +708,7 @@ namespace SKTRFIDLIB.Service
                 reader.NodeId,
                 GetMethodNodeId(reader.NodeId, AIM.AutoId.BrowseNames.WriteTag),
                 inputArguments,
-                new RequestSettings() { OperationTimeout = 10000 },
+                new RequestSettings() { OperationTimeout = 60000 * 10 },
                 out List<StatusCode> inputArgumentErrors,
                 out outputArguments);
             }

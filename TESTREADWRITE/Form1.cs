@@ -43,17 +43,32 @@ namespace TESTREADWRITE
         {
             if (await OpcUaService.Instance.ConnectAsync("192.168.1.253", 4840))
             {
+                RefreshReaderListCommandExecute();
                 readers = Readers.Where(w => w.Ident == "Ident 0").FirstOrDefault();
             }
         }
-
+        private static void RefreshReaderListCommandExecute()
+        {
+            Readers.Clear();
+            try
+            {
+                var ReaderList = OpcUaService.Instance.GetAllReader();
+                for (int i = 0; i < ReaderList.Count; i++)
+                {
+                    Readers.Add(ReaderList[i]);
+                }
+            }
+            catch (OpcUaServiceException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
         private async void button2_Click(object sender, EventArgs e)
         {
-            //RfidTag selectedTag = null;
             string read_tag = "";
             try
             {
-                var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 12);
+                var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
                 if (result_read.Item2.IsGood)
                 {
                     read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);

@@ -56,6 +56,8 @@ namespace SKTRFIDCOMMON
                         Reader SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
                     #region Loop Scan
                     LoopScan:
+
+                        #region SCAN
                         //Scan RFID
                         bool status_scan = false;
                         string tag_id = "";
@@ -79,15 +81,17 @@ namespace SKTRFIDCOMMON
                             }
                         }
 
+                        #endregion SCAN
+
+                        #region READ TAG
                         // Read Tag
                         bool status_read = false;
-                        RfidTag selectedTag = null;
                         string read_tag = "";
                         while (status_read == false)
                         {
                             try
                             {
-                                var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, selectedTag, 0, 13);
+                                var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
                                 if (result_read.Item2.IsGood)
                                 {
                                     read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
@@ -101,12 +105,61 @@ namespace SKTRFIDCOMMON
                                 goto LoopScan;
                             }
                         }
+                        #endregion READ TAG
 
+                        string rfid_code = string.Empty;
+                        string license_plate1 = string.Empty;
+                        string license_plate2 = string.Empty;
+                        string license_plate3 = string.Empty;
+                        string truck_type = string.Empty;
+                        string weight_code = string.Empty;
+                        string cane_type = string.Empty;
+                        string weight_type = string.Empty;
+                        string queue_status = string.Empty;
+                        string dump_no = string.Empty;
+
+                        if (read_tag.Length >= 12 * 2)
+                        {
+                            rfid_code = read_tag.Substring(0, 4);
+                            license_plate1 = read_tag.Substring(4, 4);
+                            license_plate2 = read_tag.Substring(8, 2);
+                            license_plate3 = read_tag.Substring(10, 4);
+                            truck_type = read_tag.Substring(14, 1);
+                            weight_code = read_tag.Substring(15, 5);
+                            cane_type = read_tag.Substring(20, 1);
+                            weight_type = read_tag.Substring(21, 1);
+                            queue_status = read_tag.Substring(22, 1);
+                            dump_no = read_tag.Substring(23, 1);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                SoundPlayer dump_wave_file = new SoundPlayer();
+                                dump_wave_file.SoundLocation = Path.Combine(path, $"voice\\noscan.wav");
+                                dump_wave_file.PlaySync();
+                            }
+                            catch
+                            {
+
+                            }
+                            return;
+                        }
+
+                        #region WRITE TAG
                         //Write Tag
                         bool status_write = false;
-                        string date_now = DateTime.Now.ToString("yyyyMMddHHmmss");
-                        string data_write = "0000FFFEEE" + date_now + "00";
-                        byte[] data = Enumerable.Range(0, 13 * 2)
+                        string data_write = rfid_code +
+                                            license_plate1 +
+                                            license_plate2 +
+                                            license_plate3 +
+                                            truck_type +
+                                            weight_code +
+                                            cane_type +
+                                            weight_type +
+                                            queue_status +
+                                            dump_no;
+                        byte[] data = Enumerable.Range(0, 12 * 2)
                                         .Where(x => x % 2 == 0)
                                         .Select(x => Convert.ToByte(data_write.Substring(x, 2), 16))
                                         .ToArray();
@@ -120,7 +173,7 @@ namespace SKTRFIDCOMMON
                                 {
                                     //Weite Data to text file
                                     string loca = @"D:\log.txt";
-                                    File.AppendAllText(loca, server + " " + dump + " " + result_write.Item2.IsGood + " " + DateTime.Now + " " + tag_id + " " + read_tag + Environment.NewLine);
+                                    File.AppendAllText(loca, server + " " + dump + " " + result_write.Item2.IsGood + " " + DateTime.Now + " " + tag_id + " " + data_write + Environment.NewLine);
                                     status_write = true;
                                 }
                             }
@@ -132,56 +185,14 @@ namespace SKTRFIDCOMMON
                             }
                         }
 
+                        #endregion WRITE TAG
+
+                        #region API
                         DataModel data_dump = new DataModel();
-                        if (dump == 1)
-                        {
-                            data_dump.dump_id = "1";
-                            data_dump.area_id = 113;
-                            data_dump.crop_year = "2565/66";
-                            data_dump.rfid = "007086";
-                        }
-                        if (dump == 2)
-                        {
-                            data_dump.dump_id = "1";
-                            data_dump.area_id = 113;
-                            data_dump.crop_year = "2565/66";
-                            data_dump.rfid = "007086";
-                        }
-                        if (dump == 3)
-                        {
-                            data_dump.dump_id = "1";
-                            data_dump.area_id = 113;
-                            data_dump.crop_year = "2565/66";
-                            data_dump.rfid = "007086";
-                        }
-                        if (dump == 4)
-                        {
-                            data_dump.dump_id = "1";
-                            data_dump.area_id = 113;
-                            data_dump.crop_year = "2565/66";
-                            data_dump.rfid = "007086";
-                        }
-                        if (dump == 5)
-                        {
-                            data_dump.dump_id = "5";
-                            data_dump.area_id = 113;
-                            data_dump.crop_year = "2565/66";
-                            data_dump.rfid = "006708";
-                        }
-                        if (dump == 6)
-                        {
-                            data_dump.dump_id = "6";
-                            data_dump.area_id = 113;
-                            data_dump.crop_year = "2565/66";
-                            data_dump.rfid = "006648";
-                        }
-                        if (dump == 7)
-                        {
-                            data_dump.dump_id = "1";
-                            data_dump.area_id = 113;
-                            data_dump.crop_year = "2565/66";
-                            data_dump.rfid = "007086";
-                        }
+                        data_dump.dump_id = dump.ToString();
+                        data_dump.area_id = 113;
+                        data_dump.crop_year = "2565/66";
+                        data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
 
                         // Run API Service
                         RFIDModel rfid = await CallAPI(data_dump);
@@ -202,8 +213,8 @@ namespace SKTRFIDCOMMON
                                 dataDump.rfid_lastdate = DateTime.Now;
                                 dataDump.cane_type = Int32.Parse(rfid.Data[0].CaneType);
                                 dataDump.barcode = rfid.Data[0].Barcode;
-                                dataDump.truck_type = 0;
-                                dataDump.weight_type = 0;
+                                dataDump.truck_type = Convert.ToInt32(truck_type);
+                                dataDump.weight_type = Convert.ToInt32(weight_type);
                                 dataDump.queue_status = 2;
                                 string message = RFID.UpdateRFID(dataDump);
                             }
@@ -237,6 +248,7 @@ namespace SKTRFIDCOMMON
                             return;
                         }
 
+                        #endregion API
                         // Speaker
                         Run(rfid, dump);
                     }
@@ -272,18 +284,6 @@ namespace SKTRFIDCOMMON
 
                 string loca = @"D:\log.txt";
                 File.AppendAllText(loca, server + " " + dump + " " + DateTime.Now + " " + ex.Message + Environment.NewLine);
-
-                //Update Data To Database
-                DataModel dataDump = new DataModel();
-                dataDump.dump_id = dump.ToString();
-                dataDump.truck_number = "";
-                dataDump.rfid_lastdate = DateTime.Now;
-                dataDump.cane_type = 0;
-                dataDump.barcode = "";
-                dataDump.truck_type = 0;
-                dataDump.weight_type = 0;
-                dataDump.queue_status = 2;
-                string message = RFID.UpdateRFID(dataDump);
             }
             finally
             {
