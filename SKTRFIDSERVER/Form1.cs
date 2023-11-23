@@ -115,13 +115,13 @@ namespace SKTRFIDSERVER
 
                         // Read Tag
                         bool status_read = false;
-                        RfidTag selectedTag = null;
+                        //RfidTag selectedTag = null;
                         string read_tag = "";
                         while (status_read == false)
                         {
                             try
                             {
-                                var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, selectedTag, 0, 13);
+                                var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
                                 if (result_read.Item2.IsGood)
                                 {
                                     read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
