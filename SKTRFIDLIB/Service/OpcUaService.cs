@@ -299,7 +299,7 @@ namespace SKTRFIDLIB.Service
 
             StatusCode statusCode;
             List<Variant> outputArguments;
-
+            //LoopScan:
             try
             {
                 statusCode = _session.Call(
@@ -310,8 +310,9 @@ namespace SKTRFIDLIB.Service
                 out List<StatusCode> inputArgumentErrors,
                 out outputArguments);
             }
-            catch (Exception e)
-            {               
+            catch(Exception e)
+            {             
+                //goto LoopScan;
                 throw new OpcUaServiceException(e.Message, e);
             }
 
@@ -319,6 +320,7 @@ namespace SKTRFIDLIB.Service
 
             if (StatusCode.IsBad(statusCode))
             {
+                //goto LoopScan;
                 throw new OpcUaServiceException(statusCode.GetCodeName());
             }
 
@@ -397,7 +399,7 @@ namespace SKTRFIDLIB.Service
                    reader.NodeId,
                    GetMethodNodeId(reader.NodeId, AIM.AutoId.BrowseNames.Scan), //Scan method
                    inputArguments,
-                   new RequestSettings() { OperationTimeout = 60000 * 10 },
+                   new RequestSettings() { OperationTimeout = 600000 },
                    out List<StatusCode> inputArgumentErrors,
                    out outputArguments);
             }
@@ -483,7 +485,7 @@ namespace SKTRFIDLIB.Service
                     reader.NodeId,
                     GetMethodNodeId(reader.NodeId, AIM.AutoId.BrowseNames.ScanStart),
                     inputArguments,
-                    new RequestSettings() { OperationTimeout = 60000 * 10 },
+                    new RequestSettings() { OperationTimeout = 600000 },
                     out List<StatusCode> inputArgumentErrors,
                     out outputArguments);
             }

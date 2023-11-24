@@ -90,7 +90,6 @@ namespace SKTRFIDSERVER
                         }
                     #region Loop Scan
                     LoopScan:
-
                         #region SCAN
                         //Scan RFID
                         bool status_scan = false;
@@ -99,7 +98,7 @@ namespace SKTRFIDSERVER
                         {
                             try
                             {
-                                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, true);
+                                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1, 1);
                                 if (tuple.Item1.Status == "SUCCESS")
                                 {
                                     tag_id = tuple.Item1.Tags[0].IdentiferString;
@@ -107,7 +106,7 @@ namespace SKTRFIDSERVER
                                     status_scan = true;
                                 }
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 string loca = @"D:\log.txt";
                                 File.AppendAllText(loca, server + " " + dump + " " + DateTime.Now + " " + ex.Message + Environment.NewLine);
@@ -184,6 +183,7 @@ namespace SKTRFIDSERVER
                         #region WRITE TAG
                         //Write Tag
                         bool status_write = false;
+                        queue_status = "3";
                         //string data_write = "19F9534B5111253203790131";
                         string data_write = rfid_code +
                                             license_plate1 +
@@ -211,6 +211,7 @@ namespace SKTRFIDSERVER
                                     string loca = @"D:\log.txt";
                                     File.AppendAllText(loca, server + " " + dump + " " + result_write.Item2.IsGood + " " + DateTime.Now + " " + tag_id + " " + data_write + Environment.NewLine);
                                     status_write = true;
+                                    OpcUaService.Instance.ScanStop(SelectedReader);
                                 }
                             }
                             catch(Exception ex)

@@ -65,7 +65,7 @@ namespace SKTRFIDCOMMON
                         {
                             try
                             {
-                                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, true);
+                                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1,1);
                                 if (tuple.Item1.Status == "SUCCESS")
                                 {
                                     tag_id = tuple.Item1.Tags[0].IdentiferString;
@@ -149,6 +149,7 @@ namespace SKTRFIDCOMMON
                         #region WRITE TAG
                         //Write Tag
                         bool status_write = false;
+                        queue_status = "3";
                         string data_write = rfid_code +
                                             license_plate1 +
                                             license_plate2 +
