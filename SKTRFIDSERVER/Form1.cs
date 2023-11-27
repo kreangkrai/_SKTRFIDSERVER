@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using OMRON.Compolet.CIP;
 using SKTRFIDLIB.Model;
 using SKTRFIDLIB.Service;
 using SKTRFIDSERVER.Interface;
@@ -28,6 +29,7 @@ namespace SKTRFIDSERVER
         static RfidTag SelectedTag = null;
         Reader readers = null;
         private IRFID RFID;
+        CJ2Compolet cj2;
         public Form1(string _server, string _dump)
         {
             InitializeComponent();
@@ -41,6 +43,14 @@ namespace SKTRFIDSERVER
         {
             try
             {
+                // PLC
+                cj2 = new CJ2Compolet();
+                cj2.ConnectionType = ConnectionType.UCMM;
+                cj2.UseRoutePath = false;
+                cj2.PeerAddress = "192.168.1.250";
+                cj2.LocalPort = 2;
+                cj2.Active = true;
+
                 if (await OpcUaService.Instance.ConnectAsync(server, 4840))
                 {
                     string ident = "";
@@ -207,11 +217,21 @@ namespace SKTRFIDSERVER
                                 var result_write = await OpcUaService.Instance.WriteTagAsync(SelectedReader, SelectedTag, 0, data);
                                 if (result_write.Item2.IsGood)
                                 {
+                                    // Clear PLC
+                                    string[] dump_plc = new string[7] { "auto_dump01" ,
+                                                                        "auto_dump02" ,
+                                                                        "auto_dump03" ,
+                                                                        "auto_dump04" ,
+                                                                        "auto_dump05" ,
+                                                                        "auto_dump06" ,
+                                                                        "auto_dump07" };
+                                    cj2.WriteVariable(dump_plc[dump-1], false);
+                                    
+
                                     //Weite Data to text file
                                     string loca = @"D:\log.txt";
                                     File.AppendAllText(loca, server + " " + dump + " " + result_write.Item2.IsGood + " " + DateTime.Now + " " + tag_id + " " + data_write + Environment.NewLine);
                                     status_write = true;
-                                    OpcUaService.Instance.ScanStop(SelectedReader);
                                 }
                             }
                             catch(Exception ex)
@@ -433,9 +453,10 @@ namespace SKTRFIDSERVER
             }
         }
 
-        private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        private  void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            await OpcUaService.Instance.DisconnectAsync();
+            OpcUaService.Instance.Disconnect();
+            Application.Exit();
         }
     }
 }
