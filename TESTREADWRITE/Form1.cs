@@ -30,7 +30,7 @@ namespace TESTREADWRITE
             if (readers != null)
             {
                 SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
-                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, true);
+                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1,1);
                 if (tuple.Item1.Status == "SUCCESS")
                 {
                     tag_id = tuple.Item1.Tags[0].IdentiferString;
