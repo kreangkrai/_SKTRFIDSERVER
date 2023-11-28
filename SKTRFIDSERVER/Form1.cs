@@ -30,24 +30,36 @@ namespace SKTRFIDSERVER
         Reader readers = null;
         private IRFID RFID;
         CJ2Compolet cj2;
+        private ISetting Settings;
         public Form1(string _server, string _dump)
         {
             InitializeComponent();
             dump = Convert.ToInt32(_dump);
             server = _server;
-            this.Text = server + " : " + dump;
             RFID = new RFIDService();
+            Settings = new SettingService();
         }
 
         private async void Form1_Load(object sender, EventArgs e)
         {
             try
             {
+                //Get Setting
+                SettingModel Setting = Settings.GetSetting();
+                if (Setting.no == 1)
+                {                  
+                    this.Text = server + " : " + dump;
+                }
+                else
+                {
+                    return;
+                }
+
                 // PLC
                 cj2 = new CJ2Compolet();
                 cj2.ConnectionType = ConnectionType.UCMM;
                 cj2.UseRoutePath = false;
-                cj2.PeerAddress = "192.168.1.250";
+                cj2.PeerAddress = Setting.ip_plc;
                 cj2.LocalPort = 2;
                 cj2.Active = true;
 
@@ -59,11 +71,11 @@ namespace SKTRFIDSERVER
                     idents.Add("Ident 1");
                     idents.Add("Ident 2");
                     idents.Add("Ident 3");
-                    if (server == "192.168.1.253")
+                    if (server == Setting.ip1)
                     {
                         ident = idents[dump - 1];
                     }
-                    if (server == "192.168.1.254")
+                    if (server == Setting.ip2)
                     {
                         ident = idents[dump - 5];
                     }
@@ -72,11 +84,11 @@ namespace SKTRFIDSERVER
                     RefreshReaderListCommandExecute();
 
                     
-                    if (server == "192.168.1.253")
+                    if (server == Setting.ip1)
                     {
                         readers = Readers.Where(w => w.Ident == ident).FirstOrDefault();
                     }
-                    if (server == "192.168.1.254")
+                    if (server == Setting.ip2)
                     {
                         readers = Readers.Where(w => w.Ident == ident).FirstOrDefault();
                     }
@@ -247,8 +259,8 @@ namespace SKTRFIDSERVER
 
                         DataModel data_dump = new DataModel();
                         data_dump.dump_id = dump.ToString();
-                        data_dump.area_id = 113;
-                        data_dump.crop_year = "2565/66";
+                        data_dump.area_id = Setting.area_id;
+                        data_dump.crop_year = Setting.crop_year;
                         data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6,'0');
 
                         // Run API Service
@@ -259,7 +271,7 @@ namespace SKTRFIDSERVER
                         if (rfid != null)
                         {
                             //Update status dump 
-                            DataUpdateModel dataUpdate = await UpdateAPI(113, "2565/66", rfid.Data[0].Barcode, 1, dump, "ADD");
+                            DataUpdateModel dataUpdate = await UpdateAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, 1, dump, "ADD");
 
                             if (dataUpdate != null)
                             {

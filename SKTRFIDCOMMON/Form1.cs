@@ -27,12 +27,12 @@ namespace SKTRFIDCOMMON
         static RfidTag SelectedTag = null;
         Reader readers = null;
         private IRFID RFID;
+        private ISetting Settings;
         public Form1(string _dump)
         {
             InitializeComponent();
             dump = Convert.ToInt32(_dump);
-            server = "192.168.1.254";
-            this.Text = server + " : " + dump;
+            Settings = new SettingService();          
             RFID = new RFIDService();
         }
 
@@ -40,6 +40,18 @@ namespace SKTRFIDCOMMON
         {
             try
             {
+                //Get Setting
+                SettingModel Setting = Settings.GetSetting();
+                if (Setting.no == 1)
+                {
+                    server = Setting.ip2;
+                    this.Text = server + " : " + dump;                   
+                }
+                else
+                {
+                    return;
+                }
+
                 if (await OpcUaService.Instance.ConnectAsync(server, 4840))
                 {
                     string ident = "Ident 3";
@@ -191,8 +203,8 @@ namespace SKTRFIDCOMMON
                         #region API
                         DataModel data_dump = new DataModel();
                         data_dump.dump_id = dump.ToString();
-                        data_dump.area_id = 113;
-                        data_dump.crop_year = "2565/66";
+                        data_dump.area_id = Setting.area_id;
+                        data_dump.crop_year = Setting.crop_year;
                         data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
 
                         // Run API Service
@@ -203,7 +215,7 @@ namespace SKTRFIDCOMMON
                         if (rfid != null)
                         {
                             //Update status dump 
-                            DataUpdateModel dataUpdate = await UpdateAPI(113, "2565/66", rfid.Data[0].Barcode, 1, dump, "ADD");
+                            DataUpdateModel dataUpdate = await UpdateAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, 1, dump, "ADD");
                             if (dataUpdate != null)
                             {
                                 //Update Data To Database
