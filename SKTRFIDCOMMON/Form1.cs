@@ -23,15 +23,17 @@ namespace SKTRFIDCOMMON
     {
         public int dump = 0;
         public string server = "";
+        public int phase = 0;
         static List<Reader> Readers = new List<Reader>();
         static RfidTag SelectedTag = null;
         Reader readers = null;
         private IRFID RFID;
         private ISetting Settings;
-        public Form1(string _dump)
+        public Form1(string _dump,string _phase)
         {
             InitializeComponent();
             dump = Convert.ToInt32(_dump);
+            phase = Convert.ToInt32(_phase);
             Settings = new SettingService();          
             RFID = new RFIDService();
         }
@@ -215,7 +217,7 @@ namespace SKTRFIDCOMMON
                         if (rfid != null)
                         {
                             //Update status dump 
-                            DataUpdateModel dataUpdate = await UpdateAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, 1, dump, "ADD");
+                            DataUpdateModel dataUpdate = await UpdateAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, phase, dump, "ADD");
                             if (dataUpdate != null)
                             {
                                 //Update Data To Database

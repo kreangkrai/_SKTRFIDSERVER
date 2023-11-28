@@ -25,17 +25,19 @@ namespace SKTRFIDSERVER
     {
         public int dump = 0;
         public string server = "";
+        public int phase = 0;
         static List<Reader> Readers = new List<Reader>();
         static RfidTag SelectedTag = null;
         Reader readers = null;
         private IRFID RFID;
         CJ2Compolet cj2;
         private ISetting Settings;
-        public Form1(string _server, string _dump)
+        public Form1(string _server, string _dump,string _phase)
         {
             InitializeComponent();
             dump = Convert.ToInt32(_dump);
             server = _server;
+            phase = Convert.ToInt32(_phase);
             RFID = new RFIDService();
             Settings = new SettingService();
         }
@@ -271,7 +273,7 @@ namespace SKTRFIDSERVER
                         if (rfid != null)
                         {
                             //Update status dump 
-                            DataUpdateModel dataUpdate = await UpdateAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, 1, dump, "ADD");
+                            DataUpdateModel dataUpdate = await UpdateAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, phase, dump, "ADD");
 
                             if (dataUpdate != null)
                             {

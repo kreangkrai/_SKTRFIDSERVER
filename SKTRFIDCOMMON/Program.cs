@@ -16,7 +16,7 @@ namespace SKTRFIDCOMMON
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1(args[0]));
+            Application.Run(new Form1(args[0],args[1]));
         }
     }
 }
