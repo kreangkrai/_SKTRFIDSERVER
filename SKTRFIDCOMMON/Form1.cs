@@ -187,8 +187,8 @@ namespace SKTRFIDCOMMON
                                 if (result_write.Item2.IsGood)
                                 {
                                     //Weite Data to text file
-                                    string loca = @"D:\log.txt";
-                                    File.AppendAllText(loca, server + " " + dump + " " + result_write.Item2.IsGood + " " + DateTime.Now + " " + tag_id + " " + data_write + Environment.NewLine);
+                                    //string loca = @"D:\log.txt";
+                                    //File.AppendAllText(loca, server + " " + dump + " " + result_write.Item2.IsGood + " " + DateTime.Now + " " + tag_id + " " + data_write + Environment.NewLine);
                                     status_write = true;
                                 }
                             }
@@ -227,10 +227,11 @@ namespace SKTRFIDCOMMON
                                 dataDump.truck_number = rfid.Data[0].TruckNumber;
                                 dataDump.rfid_lastdate = DateTime.Now;
                                 dataDump.cane_type = Int32.Parse(rfid.Data[0].CaneType);
+                                dataDump.contaminants = 0;
                                 dataDump.barcode = rfid.Data[0].Barcode;
                                 dataDump.truck_type = Convert.ToInt32(truck_type);
                                 dataDump.weight_type = Convert.ToInt32(weight_type);
-                                dataDump.queue_status = 2;
+                                dataDump.queue_status = 3;
                                 string message = RFID.UpdateRFID(dataDump);
                             }
                             else
