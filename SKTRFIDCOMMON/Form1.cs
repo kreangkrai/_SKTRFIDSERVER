@@ -186,9 +186,6 @@ namespace SKTRFIDCOMMON
                                 var result_write = await OpcUaService.Instance.WriteTagAsync(SelectedReader, SelectedTag, 0, data);
                                 if (result_write.Item2.IsGood)
                                 {
-                                    //Weite Data to text file
-                                    //string loca = @"D:\log.txt";
-                                    //File.AppendAllText(loca, server + " " + dump + " " + result_write.Item2.IsGood + " " + DateTime.Now + " " + tag_id + " " + data_write + Environment.NewLine);
                                     status_write = true;
                                 }
                             }
@@ -266,7 +263,7 @@ namespace SKTRFIDCOMMON
 
                         #endregion API
                         // Speaker
-                        Run(rfid, dump);
+                        Run(rfid);
                     }
                     else
                     {
@@ -347,7 +344,7 @@ namespace SKTRFIDCOMMON
                 return null;
             }
         }
-        private void Run(RFIDModel rfid, int dump)
+        private void Run(RFIDModel rfid)
         {
             string path = Directory.GetCurrentDirectory();
             if (rfid != null)

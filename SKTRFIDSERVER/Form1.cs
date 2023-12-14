@@ -73,13 +73,55 @@ namespace SKTRFIDSERVER
                     idents.Add("Ident 1");
                     idents.Add("Ident 2");
                     idents.Add("Ident 3");
-                    if (server == Setting.ip1)
+
+                    /*
+                      Phase 1 DUMP [1-7]
+                         Controller #1
+                         DUMP1 Ident 0
+                         DUMP2 Ident 1
+                         DUMP3 Ident 2
+                         DUMP4 Ident 3
+
+                         Controller #2
+                         DUMP5 Ident 0
+                         DUMP6 Ident 1
+                         DUMP7 Ident 2
+                         Common DUMP Ident 3
+
+                      Phase 2 DUMP [8-13]
+                         Controller #1
+                         DUMP8 Ident 0
+                         DUMP9 Ident 1
+                         DUMP10 Ident 2
+                         DUMP11 Ident 3
+
+                         Controller #2
+                         DUMP12 Ident 0
+                         DUMP13 Ident 1
+                         Common DUMP Ident 3
+                    */
+
+                    if (phase == 1)
                     {
-                        ident = idents[dump - 1];
+                        if (server == Setting.ip1)
+                        {
+                            ident = idents[dump - 1];
+                        }
+                        if (server == Setting.ip2)
+                        {
+                            ident = idents[dump - 5];
+                        }
                     }
-                    if (server == Setting.ip2)
+                    if (phase == 2)
                     {
-                        ident = idents[dump - 5];
+                        if (server == Setting.ip1)
+                        {
+                            ident = idents[dump - (1 + 7)];
+                        }
+                        if (server == Setting.ip2)
+                        {
+                            ident = idents[dump - (5 + 7)];
+                        }
                     }
 
                     string path = Directory.GetCurrentDirectory();
@@ -232,19 +274,29 @@ namespace SKTRFIDSERVER
                                 if (result_write.Item2.IsGood)
                                 {
                                     // Clear PLC
-                                    string[] dump_plc = new string[7] { "auto_dump01" ,
-                                                                        "auto_dump02" ,
-                                                                        "auto_dump03" ,
-                                                                        "auto_dump04" ,
-                                                                        "auto_dump05" ,
-                                                                        "auto_dump06" ,
-                                                                        "auto_dump07" };
-                                    cj2.WriteVariable(dump_plc[dump-1], false);
-                                    
+                                    if (phase == 1)
+                                    {
+                                        string[] dump_plc = new string[7] { "auto_dump01" ,
+                                                                            "auto_dump02" ,
+                                                                            "auto_dump03" ,
+                                                                            "auto_dump04" ,
+                                                                            "auto_dump05" ,
+                                                                            "auto_dump06" ,
+                                                                            "auto_dump07" };
+                                        cj2.WriteVariable(dump_plc[dump - 1], false);
+                                    }
 
-                                    //Weite Data to text file
-                                    //string loca = @"D:\log.txt";
-                                    //File.AppendAllText(loca, server + " " + dump + " " + result_write.Item2.IsGood + " " + DateTime.Now + " " + tag_id + " " + data_write + Environment.NewLine);
+                                    if (phase == 2)
+                                    {
+                                        string[] dump_plc = new string[6] { "auto_dump08" ,
+                                                                            "auto_dump09" ,
+                                                                            "auto_dump10" ,
+                                                                            "auto_dump11" ,
+                                                                            "auto_dump12" ,
+                                                                            "auto_dump13" };
+                                        cj2.WriteVariable(dump_plc[dump - (1 + 7)], false);
+                                    }
+
                                     status_write = true;
                                 }
                             }
