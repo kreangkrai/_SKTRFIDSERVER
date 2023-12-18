@@ -41,10 +41,10 @@ namespace TESTREADWRITE
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            if (await OpcUaService.Instance.ConnectAsync("192.168.1.253", 4840))
+            if (await OpcUaService.Instance.ConnectAsync("192.168.250.103", 4840))
             {
                 RefreshReaderListCommandExecute();
-                readers = Readers.Where(w => w.Ident == "Ident 0").FirstOrDefault();
+                readers = Readers.Where(w => w.Ident == "Ident 1").FirstOrDefault();
             }
         }
         private static void RefreshReaderListCommandExecute()
@@ -57,6 +57,7 @@ namespace TESTREADWRITE
                 {
                     Readers.Add(ReaderList[i]);
                 }
+                Readers = Readers.OrderBy(o => o.Ident).ToList();
             }
             catch (OpcUaServiceException e)
             {
