@@ -32,6 +32,8 @@ namespace SKTRFIDSERVER
         private IRFID RFID;
         CJ2Compolet cj2;
         private ISetting Settings;
+        RFIDModel rfid;
+        string statusAllergen = "Yes";
 
         Label txtMsg = new Label();
         Button btnOK = new Button();
@@ -46,6 +48,7 @@ namespace SKTRFIDSERVER
             phase = Convert.ToInt32(_phase);
             RFID = new RFIDService();
             Settings = new SettingService();
+            rfid = new RFIDModel();
         }
 
         private async void Form1_Load(object sender, EventArgs e)
@@ -257,8 +260,11 @@ namespace SKTRFIDSERVER
                         data_dump.area_id = Setting.area_id;
                         data_dump.crop_year = Setting.crop_year;
                         data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
+                        
                         // Run API Service
-                        RFIDModel rfid = await CallAPI(data_dump);
+                        rfid = await CallAPI(data_dump);
+
+                        //Check Allergen
                         if(rfid.Data[0].Allergen != "No")
                         {
                             TextAllergen("Allergen", "ดัมพ์" + dump, "ทะเบียน " + data_dump.truck_number);                          
@@ -464,6 +470,27 @@ namespace SKTRFIDSERVER
                 return null;
             }
         }
+        private async Task<ResultUpdateAlledModel> UpdateAlled(string area_id, string crop_year, string barcode, string alled)
+        {
+            ResultUpdateAlledModel result = new ResultUpdateAlledModel();
+            try
+            {
+                HttpClient client = new HttpClient();
+                string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
+                HttpResponseMessage response = await client.PutAsync(url, null);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<ResultUpdateAlledModel>(responseBody);
+                }
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         private void Run(RFIDModel rfid, int dump)
         {
             string path = Directory.GetCurrentDirectory();
@@ -553,7 +580,7 @@ namespace SKTRFIDSERVER
             btnYes.Font = new Font("Angsana New", 20f);
             btnYes.Location = new Point(newForm.Width / 2 - 140, 120);
             btnYes.Click += BtnYes_Click;
-
+            btnYes.BackColor = Color.Red;
 
             newForm.Controls.Add(btnNo);
             btnNo.Text = "ไม่มี";
@@ -585,23 +612,31 @@ namespace SKTRFIDSERVER
         }
         private void BtnNo_Click(object sender, EventArgs e)
         {
+            statusAllergen = "No";
             btnYes.BackColor = Color.White;
             btnNo.BackColor = Color.GreenYellow;
         }
 
         private void BtnYes_Click(object sender, EventArgs e)
         {
+            statusAllergen = "Yes";
             btnYes.BackColor = Color.Red;
             btnNo.BackColor = Color.White;
         }
 
-        private void BtnOK_Click(object sender, EventArgs e)
+        private async void BtnOK_Click(object sender, EventArgs e)
         {
             DialogResult dialog = MessageBox.Show("", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
             if (dialog == DialogResult.OK)
             {
                 //Call Form Allert Allergen
-
+                SettingModel setting = Settings.GetSetting();
+                string alleD = "0";
+                if(statusAllergen == "Yes")
+                {
+                    alleD = "1";
+                }
+                await UpdateAlled(setting.area_id.ToString(), setting.crop_year, rfid.Data[0].Barcode, alleD);
                 newForm.Close();
                 btnOK.DialogResult = DialogResult.OK;
 

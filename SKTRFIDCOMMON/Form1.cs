@@ -224,7 +224,7 @@ namespace SKTRFIDCOMMON
                                 dataDump.truck_number = rfid.Data[0].TruckNumber;
                                 dataDump.rfid_lastdate = DateTime.Now;
                                 dataDump.cane_type = Int32.Parse(rfid.Data[0].CaneType);
-                                dataDump.contaminants = 0;
+                                dataDump.allergen = rfid.Data[0].Allergen;
                                 dataDump.barcode = rfid.Data[0].Barcode;
                                 dataDump.truck_type = Convert.ToInt32(truck_type);
                                 dataDump.weight_type = Convert.ToInt32(weight_type);
@@ -343,7 +343,7 @@ namespace SKTRFIDCOMMON
             {
                 return null;
             }
-        }
+        }   
         private void Run(RFIDModel rfid)
         {
             string path = Directory.GetCurrentDirectory();
