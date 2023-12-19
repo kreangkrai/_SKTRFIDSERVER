@@ -267,6 +267,7 @@ namespace SKTRFIDSERVER
                         //Check Allergen
                         if(rfid.Data[0].Allergen != "No")
                         {
+                            //Message Box Custom
                             TextAllergen("Allergen", "ดัมพ์" + dump, "ทะเบียน " + data_dump.truck_number);                          
                         }
                         
@@ -629,7 +630,7 @@ namespace SKTRFIDSERVER
             DialogResult dialog = MessageBox.Show("", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
             if (dialog == DialogResult.OK)
             {
-                //Call Form Allert Allergen
+                //Call Form Alert Allergen
                 SettingModel setting = Settings.GetSetting();
                 string alleD = "0";
                 if(statusAllergen == "Yes")
