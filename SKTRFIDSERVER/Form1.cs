@@ -32,6 +32,12 @@ namespace SKTRFIDSERVER
         private IRFID RFID;
         CJ2Compolet cj2;
         private ISetting Settings;
+
+        Label txtMsg = new Label();
+        Button btnOK = new Button();
+        Button btnNo = new Button();
+        Button btnYes = new Button();
+        Form newForm = new Form();
         public Form1(string _server, string _dump,string _phase)
         {
             InitializeComponent();
@@ -255,11 +261,9 @@ namespace SKTRFIDSERVER
                         RFIDModel rfid = await CallAPI(data_dump);
                         if(rfid.Data[0].Allergen != "No")
                         {
-                            //Call Form Allert Allergen
+                            TextAllergen("Allergen", "ดัมพ์" + dump, "ทะเบียน " + data_dump.truck_number);                          
                         }
                         
-
-
                         #region WRITE TAG
                         //Write Tag
                         bool status_write = false;
@@ -325,11 +329,6 @@ namespace SKTRFIDSERVER
 
                         #region API
 
-                       
-
-                        
-
-                       
                         //Save data truck 
                         if (rfid != null)
                         {
@@ -345,7 +344,7 @@ namespace SKTRFIDSERVER
                                 dataDump.truck_number = rfid.Data[0].TruckNumber;
                                 dataDump.rfid_lastdate = DateTime.Now;
                                 dataDump.cane_type = Int32.Parse(rfid.Data[0].CaneType);
-                                dataDump.allergen = 0;
+                                dataDump.allergen = rfid.Data[0].Allergen;
                                 dataDump.barcode = rfid.Data[0].Barcode;
                                 dataDump.truck_type = Convert.ToInt32(truck_type);
                                 dataDump.weight_type = Convert.ToInt32(weight_type);
@@ -533,6 +532,80 @@ namespace SKTRFIDSERVER
         {
             OpcUaService.Instance.Disconnect();
             Application.Exit();
+        }
+
+        private DialogResult spawnForm(string title, string text1, string text2)
+        {
+            newForm.Text = title;
+            newForm.Controls.Add(txtMsg);
+            txtMsg.AutoSize = true;
+            txtMsg.Text = text1 + Environment.NewLine + text2;
+            newForm.Width = 300;
+            newForm.Height = 240;
+            txtMsg.Location = new Point(newForm.Width / 2 - 130, 15);
+            txtMsg.Font = new Font("Angsana New", 25f);
+            txtMsg.TextAlign = ContentAlignment.MiddleCenter;
+
+            newForm.Controls.Add(btnYes);
+            btnYes.Text = "มี";
+            btnYes.Width = 100;
+            btnYes.Height = 50;
+            btnYes.Font = new Font("Angsana New", 20f);
+            btnYes.Location = new Point(newForm.Width / 2 - 140, 120);
+            btnYes.Click += BtnYes_Click;
+
+
+            newForm.Controls.Add(btnNo);
+            btnNo.Text = "ไม่มี";
+            btnNo.Width = 100;
+            btnNo.Height = 50;
+            btnNo.Font = new Font("Angsana New", 20f);
+            btnNo.Location = new Point(newForm.Width / 2 + 40, 120);
+            btnNo.Click += BtnNo_Click;
+
+            newForm.Controls.Add(btnOK);
+            btnOK.Text = "ยืนยัน";
+            btnOK.Width = 150;
+            btnOK.Height = 50;
+            btnOK.Font = new Font("Angsana New", 20f);
+            btnOK.Location = new Point(newForm.Width / 2 - 80, 180);
+            //btnOK.DialogResult = DialogResult.OK;
+            btnOK.Click += BtnOK_Click;
+            newForm.StartPosition = FormStartPosition.CenterScreen;
+            newForm.MaximizeBox = false;
+            newForm.MinimizeBox = false;
+            newForm.FormBorderStyle = FormBorderStyle.None;
+            newForm.TopMost = true;
+            return newForm.ShowDialog();
+
+        }
+        public DialogResult TextAllergen(string title, string text1, string text2)
+        {
+            return spawnForm(title, text1, text2);
+        }
+        private void BtnNo_Click(object sender, EventArgs e)
+        {
+            btnYes.BackColor = Color.White;
+            btnNo.BackColor = Color.GreenYellow;
+        }
+
+        private void BtnYes_Click(object sender, EventArgs e)
+        {
+            btnYes.BackColor = Color.Red;
+            btnNo.BackColor = Color.White;
+        }
+
+        private void BtnOK_Click(object sender, EventArgs e)
+        {
+            DialogResult dialog = MessageBox.Show("", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+            if (dialog == DialogResult.OK)
+            {
+                //Call Form Allert Allergen
+
+                newForm.Close();
+                btnOK.DialogResult = DialogResult.OK;
+
+            }
         }
     }
 }
