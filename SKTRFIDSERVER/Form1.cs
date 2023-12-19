@@ -246,6 +246,20 @@ namespace SKTRFIDSERVER
                             return;
                         }
 
+                        DataModel data_dump = new DataModel();
+                        data_dump.dump_id = dump.ToString();
+                        data_dump.area_id = Setting.area_id;
+                        data_dump.crop_year = Setting.crop_year;
+                        data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
+                        // Run API Service
+                        RFIDModel rfid = await CallAPI(data_dump);
+                        if(rfid.Data[0].Allergen != "No")
+                        {
+                            //Call Form Allert Allergen
+                        }
+                        
+
+
                         #region WRITE TAG
                         //Write Tag
                         bool status_write = false;
@@ -311,14 +325,9 @@ namespace SKTRFIDSERVER
 
                         #region API
 
-                        DataModel data_dump = new DataModel();
-                        data_dump.dump_id = dump.ToString();
-                        data_dump.area_id = Setting.area_id;
-                        data_dump.crop_year = Setting.crop_year;
-                        data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6,'0');
+                       
 
-                        // Run API Service
-                        RFIDModel rfid = await CallAPI(data_dump);
+                        
 
                        
                         //Save data truck 
@@ -336,7 +345,7 @@ namespace SKTRFIDSERVER
                                 dataDump.truck_number = rfid.Data[0].TruckNumber;
                                 dataDump.rfid_lastdate = DateTime.Now;
                                 dataDump.cane_type = Int32.Parse(rfid.Data[0].CaneType);
-                                dataDump.contaminants = 0;
+                                dataDump.allergen = 0;
                                 dataDump.barcode = rfid.Data[0].Barcode;
                                 dataDump.truck_type = Convert.ToInt32(truck_type);
                                 dataDump.weight_type = Convert.ToInt32(weight_type);
