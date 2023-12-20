@@ -275,6 +275,7 @@ namespace SKTRFIDSERVER
                         //Write Tag
                         bool status_write = false;
                         queue_status = "3";
+                        dump_no = dump.ToString("x").ToUpper();
                         //string data_write = "19F9534B5111253203790131";
                         string data_write = rfid_code +
                                             license_plate1 +
