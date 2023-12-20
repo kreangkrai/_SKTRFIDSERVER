@@ -24,27 +24,12 @@ namespace TESTREADWRITE
             InitializeComponent();
         }
 
-        private async void button1_Click(object sender, EventArgs e)
-        {
-
-            if (readers != null)
-            {
-                SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
-                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1,1);
-                if (tuple.Item1.Status == "SUCCESS")
-                {
-                    tag_id = tuple.Item1.Tags[0].IdentiferString;
-                    SelectedTag = tuple.Item1.Tags[0];
-                }
-            }
-        }
-
         private async void Form1_Load(object sender, EventArgs e)
         {
             if (await OpcUaService.Instance.ConnectAsync("192.168.250.103", 4840))
             {
                 RefreshReaderListCommandExecute();
-                readers = Readers.Where(w => w.Ident == "Ident 1").FirstOrDefault();
+                readers = Readers.Where(w => w.Ident == "Ident 3").FirstOrDefault();
             }
         }
         private static void RefreshReaderListCommandExecute()
@@ -66,43 +51,110 @@ namespace TESTREADWRITE
         }
         private async void button2_Click(object sender, EventArgs e)
         {
-            string read_tag = "";
-            try
+            if (readers != null)
             {
-                var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
-                if (result_read.Item2.IsGood)
+                SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
+                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, true);
+                if (tuple.Item1.Status == "SUCCESS")
                 {
-                    read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
-                    textBox1.Text = read_tag;
+                    tag_id = tuple.Item1.Tags[0].IdentiferString;
+                    SelectedTag = tuple.Item1.Tags[0];
+
+
+                    string read_tag = "";
+                    try
+                    {
+                        var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
+                        if (result_read.Item2.IsGood)
+                        {
+                            read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
+                            textBox1.Text = read_tag;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Error");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
             }
         }
 
         private async void button3_Click(object sender, EventArgs e)
         {
-            string data_write = textBox2.Text;
-
-            byte[] data = Enumerable.Range(0, 12 * 2)
-                            .Where(x => x % 2 == 0)
-                            .Select(x => Convert.ToByte(data_write.Substring(x, 2), 16))
-                            .ToArray();
-
-
-            try
+            if (readers != null)
             {
-                var result_write = await OpcUaService.Instance.WriteTagAsync(SelectedReader, SelectedTag, 0, data);
-                if (result_write.Item2.IsGood)
+                SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
+                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, true);
+                if (tuple.Item1.Status == "SUCCESS")
                 {
+                    tag_id = tuple.Item1.Tags[0].IdentiferString;
+                    SelectedTag = tuple.Item1.Tags[0];
+                    string data_write = textBox2.Text;
 
+                    byte[] data = Enumerable.Range(0, 12 * 2)
+                                    .Where(x => x % 2 == 0)
+                                    .Select(x => Convert.ToByte(data_write.Substring(x, 2), 16))
+                                    .ToArray();
+
+
+                    try
+                    {
+                        var result_write = await OpcUaService.Instance.WriteTagAsync(SelectedReader, SelectedTag, 0, data);
+                        if (result_write.Item2.IsGood)
+                        {
+                            if (readers != null)
+                            {
+                                SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
+                                var tuple1 = await OpcUaService.Instance.ScanAsync(SelectedReader, true);
+                                if (tuple1.Item1.Status == "SUCCESS")
+                                {
+                                    tag_id = tuple1.Item1.Tags[0].IdentiferString;
+                                    SelectedTag = tuple1.Item1.Tags[0];
+
+
+                                    string read_tag = "";
+                                    try
+                                    {
+                                        var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
+                                        if (result_read.Item2.IsGood)
+                                        {
+                                            read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
+                                            //textBox1.Text = read_tag;
+                                            if(textBox1.Text.Contains(read_tag))
+                                            {
+                                                MessageBox.Show("Write Completed");
+                                            }
+                                            else
+                                            {
+                                                MessageBox.Show("Write Not Complete");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            MessageBox.Show("Error");
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show(ex.Message);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Error");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
             }
         }
     }
