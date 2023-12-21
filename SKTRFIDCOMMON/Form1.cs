@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using OMRON.Compolet.CIP;
 using SKTRFIDCOMMON.Interface;
 using SKTRFIDCOMMON.Model;
 using SKTRFIDCOMMON.Service;
@@ -12,6 +13,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,11 +26,20 @@ namespace SKTRFIDCOMMON
         public int dump = 0;
         public string server = "";
         public int phase = 0;
+        CJ2Compolet cj2;
         static List<Reader> Readers = new List<Reader>();
         static RfidTag SelectedTag = null;
         Reader readers = null;
         private IRFID RFID;
         private ISetting Settings;
+        string statusAllergen = "Yes";
+        RFIDModel rfid;
+
+        Label txtMsg = new Label();
+        Button btnOK = new Button();
+        Button btnNo = new Button();
+        Button btnYes = new Button();
+        Form newForm = new Form();
         public Form1(string _dump,string _phase)
         {
             InitializeComponent();
@@ -53,6 +64,14 @@ namespace SKTRFIDCOMMON
                 {
                     return;
                 }
+
+                // PLC
+                cj2 = new CJ2Compolet();
+                cj2.ConnectionType = ConnectionType.UCMM;
+                cj2.UseRoutePath = false;
+                cj2.PeerAddress = Setting.ip_plc;
+                cj2.LocalPort = 2;
+                cj2.Active = true;
 
                 if (await OpcUaService.Instance.ConnectAsync(server, 4840))
                 {
@@ -105,7 +124,7 @@ namespace SKTRFIDCOMMON
                         {
                             try
                             {
-                                var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
+                                var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 12);
                                 if (result_read.Item2.IsGood)
                                 {
                                     read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
@@ -160,6 +179,42 @@ namespace SKTRFIDCOMMON
                             return;
                         }
 
+                        DataModel data_dump = new DataModel();
+                        data_dump.dump_id = dump.ToString();
+                        data_dump.area_id = Setting.area_id;
+                        data_dump.crop_year = Setting.crop_year;
+                        data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
+
+                        // Run API Service
+                        bool _checkInternet = checkInternet();
+                        //RFIDModel rfid = null;
+                        if (_checkInternet)
+                        {
+                            rfid = await CallAPI(data_dump);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                SoundPlayer dump_wave_file = new SoundPlayer();
+                                dump_wave_file.SoundLocation = Path.Combine(path, $"voice\\noserver.wav");
+                                dump_wave_file.PlaySync();
+                            }
+                            catch
+                            {
+
+                            }
+                            return;
+                        }
+
+                        //Check Allergen
+                        if (rfid.Data[0].Allergen != "No")
+                        {
+                            //Message Box Custom
+                            TextAllergen("Allergen", "ดัมพ์" + dump, "ทะเบียน " + data_dump.truck_number);
+                        }
+
+
                         #region WRITE TAG
                         //Write Tag
                         bool status_write = false;
@@ -187,6 +242,28 @@ namespace SKTRFIDCOMMON
                                 var result_write = await OpcUaService.Instance.WriteTagAsync(SelectedReader, SelectedTag, 0, data);
                                 if (result_write.Item2.IsGood)
                                 {
+                                    string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
+                                                                                    "TY_BF_D2" ,
+                                                                                    "TY_BF_D3" ,
+                                                                                    "TY_BF_D4" ,
+                                                                                    "TY_BF_D5" ,
+                                                                                    "TY_BF_D6" ,
+                                                                                    "TY_BF_D7" };
+                                    string _caneType = "0"; // สด
+                                    if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                    {
+                                        _caneType = "1";
+                                    }
+                                    cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
+
+                                    string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
+                                                                                    "Bar_ID2" ,
+                                                                                    "Bar_ID3" ,
+                                                                                    "Bar_ID4" ,
+                                                                                    "Bar_ID5" ,
+                                                                                    "Bar_ID6" ,
+                                                                                    "Bar_ID7" };
+                                    cj2.WriteVariable(dump_plc_Barcode[dump - 1], weight_code);
                                     status_write = true;
                                 }
                             }
@@ -201,16 +278,7 @@ namespace SKTRFIDCOMMON
                         #endregion WRITE TAG
 
                         #region API
-                        DataModel data_dump = new DataModel();
-                        data_dump.dump_id = dump.ToString();
-                        data_dump.area_id = Setting.area_id;
-                        data_dump.crop_year = Setting.crop_year;
-                        data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
-
-                        // Run API Service
-                        RFIDModel rfid = await CallAPI(data_dump);
-
-
+                        
                         //Save data truck 
                         if (rfid != null)
                         {
@@ -311,7 +379,7 @@ namespace SKTRFIDCOMMON
             try
             {
                 HttpClient client = new HttpClient();
-                string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
+                string url = $"http://10.43.6.33/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
                 HttpResponseMessage response = await client.PostAsync(url, null);
                 if (response.IsSuccessStatusCode)
                 {
@@ -331,7 +399,7 @@ namespace SKTRFIDCOMMON
             try
             {
                 HttpClient client = new HttpClient();
-                string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
+                string url = $"http://10.43.6.33/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
                 HttpResponseMessage response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
@@ -344,25 +412,45 @@ namespace SKTRFIDCOMMON
             {
                 return null;
             }
-        }   
+        }
+        private async Task<ResultUpdateAlledModel> UpdateAlled(string area_id, string crop_year, string barcode, string alled)
+        {
+            ResultUpdateAlledModel result = new ResultUpdateAlledModel();
+            try
+            {
+                HttpClient client = new HttpClient();
+                string url = $"http://10.43.6.33/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
+                HttpResponseMessage response = await client.PutAsync(url, null);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    result = JsonConvert.DeserializeObject<ResultUpdateAlledModel>(responseBody);
+                }
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
         private void Run(RFIDModel rfid)
         {
             string path = Directory.GetCurrentDirectory();
             if (rfid != null)
             {
-                for (int j = 0; j < rfid.Data?[0].TruckNumber?.Length; j++)
-                {
-                    try
-                    {
-                        SoundPlayer my_wave_file = new SoundPlayer();
-                        my_wave_file.SoundLocation = Path.Combine(path, $"voice\\{rfid.Data?[0].TruckNumber?[j]}.wav");
-                        my_wave_file.PlaySync();
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
+                //for (int j = 0; j < rfid.Data?[0].TruckNumber?.Length; j++)
+                //{
+                //    try
+                //    {
+                //        SoundPlayer my_wave_file = new SoundPlayer();
+                //        my_wave_file.SoundLocation = Path.Combine(path, $"voice\\{rfid.Data?[0].TruckNumber?[j]}.wav");
+                //        my_wave_file.PlaySync();
+                //    }
+                //    catch
+                //    {
+                //        continue;
+                //    }
+                //}
 
                 try
                 {
@@ -409,6 +497,103 @@ namespace SKTRFIDCOMMON
             }
         }
 
+        private DialogResult spawnForm(string title, string text1, string text2)
+        {
+            newForm.Text = title;
+            newForm.Controls.Add(txtMsg);
+            txtMsg.AutoSize = true;
+            txtMsg.Text = text1 + Environment.NewLine + text2;
+            newForm.Width = 300;
+            newForm.Height = 240;
+            txtMsg.Location = new Point(newForm.Width / 2 - 130, 15);
+            txtMsg.Font = new Font("Angsana New", 25f);
+            txtMsg.TextAlign = ContentAlignment.MiddleCenter;
+
+            newForm.Controls.Add(btnYes);
+            btnYes.Text = "มี";
+            btnYes.Width = 100;
+            btnYes.Height = 50;
+            btnYes.Font = new Font("Angsana New", 20f);
+            btnYes.Location = new Point(newForm.Width / 2 - 140, 120);
+            btnYes.Click += BtnYes_Click;
+            btnYes.BackColor = Color.Red;
+
+            newForm.Controls.Add(btnNo);
+            btnNo.Text = "ไม่มี";
+            btnNo.Width = 100;
+            btnNo.Height = 50;
+            btnNo.Font = new Font("Angsana New", 20f);
+            btnNo.Location = new Point(newForm.Width / 2 + 40, 120);
+            btnNo.Click += BtnNo_Click;
+
+            newForm.Controls.Add(btnOK);
+            btnOK.Text = "ยืนยัน";
+            btnOK.Width = 150;
+            btnOK.Height = 50;
+            btnOK.Font = new Font("Angsana New", 20f);
+            btnOK.Location = new Point(newForm.Width / 2 - 80, 180);
+            //btnOK.DialogResult = DialogResult.OK;
+            btnOK.Click += BtnOK_Click;
+            newForm.StartPosition = FormStartPosition.CenterScreen;
+            newForm.MaximizeBox = false;
+            newForm.MinimizeBox = false;
+            newForm.FormBorderStyle = FormBorderStyle.None;
+            newForm.TopMost = true;
+            return newForm.ShowDialog();
+
+        }
+        public DialogResult TextAllergen(string title, string text1, string text2)
+        {
+            return spawnForm(title, text1, text2);
+        }
+        private void BtnNo_Click(object sender, EventArgs e)
+        {
+            statusAllergen = "No";
+            btnYes.BackColor = Color.White;
+            btnNo.BackColor = Color.GreenYellow;
+        }
+
+        private void BtnYes_Click(object sender, EventArgs e)
+        {
+            statusAllergen = "Yes";
+            btnYes.BackColor = Color.Red;
+            btnNo.BackColor = Color.White;
+        }
+        private async void BtnOK_Click(object sender, EventArgs e)
+        {
+            DialogResult dialog = MessageBox.Show("ต้องการยืนยันหรือไม่?", "SKT RFID", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+            if (dialog == DialogResult.OK)
+            {
+                //Call Form Alert Allergen
+                SettingModel setting = Settings.GetSetting();
+                string alleD = "0";
+                if (statusAllergen == "Yes")
+                {
+                    alleD = "1";
+                }
+                await UpdateAlled(setting.area_id.ToString(), setting.crop_year, rfid.Data[0].Barcode, alleD);
+                newForm.Close();
+                btnOK.DialogResult = DialogResult.OK;
+
+            }
+        }
+        bool checkInternet()
+        {
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    using (client.OpenRead("http://10.43.6.33/"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
         private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             await OpcUaService.Instance.DisconnectAsync();

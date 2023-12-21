@@ -12,11 +12,12 @@ namespace SKTRFIDCOMMON
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string [] args)
+        static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1(args[0],args[1]));
+            //Application.Run(new Form1(args[0],args[1]));
+            Application.Run(new Form1("1","1"));
         }
     }
 }

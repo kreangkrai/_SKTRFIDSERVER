@@ -60,10 +60,10 @@ namespace TESTREADWRITE
                     tag_id = tuple.Item1.Tags[0].IdentiferString;
                     SelectedTag = tuple.Item1.Tags[0];
 
-
                     string read_tag = "";
                     try
                     {
+                        //var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
                         var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
                         if (result_read.Item2.IsGood)
                         {

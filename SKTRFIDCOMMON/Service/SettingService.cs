@@ -21,6 +21,10 @@ namespace SKTRFIDCOMMON.Service
                 using (SqlConnection cn = new SqlConnection(connectionString))
                 {
                     SqlCommand cmd = new SqlCommand($@"SELECT no,area_id,crop_year,ip1,ip2,ip_plc FROM tb_setting", cn);
+                    if (cn.State == ConnectionState.Closed)
+                    {
+                        cn.Open();
+                    }
                     SqlDataReader dr = cmd.ExecuteReader();
                     if (dr.HasRows)
                     {

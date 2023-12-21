@@ -595,7 +595,7 @@ namespace SKTRFIDLIB.Service
             inputArguments.Add(new ExtensionObject(scanData));
 
             inputArguments.Add("UID"); // Format
-            inputArguments.Add((UInt16)3); // 3 = Region User
+            inputArguments.Add((UInt16)1); // 3 = Region User
             inputArguments.Add((UInt32)offset); // Offset
             inputArguments.Add((UInt32)length); // Length
             inputArguments.Add(new byte[0]); // Password
@@ -697,7 +697,7 @@ namespace SKTRFIDLIB.Service
             inputArguments.Add(new ExtensionObject(scanData));
 
             inputArguments.Add("UID"); // Format
-            inputArguments.Add((UInt16)3); // 3 = Region User
+            inputArguments.Add((UInt16)1); // 3 = Region User
             inputArguments.Add((UInt32)offset); // Offset
             inputArguments.Add(data); // ByteString Data
             inputArguments.Add(new byte[0]); // Password

@@ -10,5 +10,6 @@ namespace SKTRFIDSERVER.Interface
     interface IRFID
     {
         string UpdateRFID(DataModel data);
+        string InsertRFIDLog(DataModel data);
     }
 }

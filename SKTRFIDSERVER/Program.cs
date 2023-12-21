@@ -17,7 +17,7 @@ namespace SKTRFIDSERVER
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1(args[0], args[1],args[2]));
-            //Application.Run(new Form1("192.168.1.253", "1"));
+            //Application.Run(new Form1("192.168.250.102", "1","1"));
         }
     }
 }

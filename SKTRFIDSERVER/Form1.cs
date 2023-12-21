@@ -14,6 +14,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace SKTRFIDSERVER
         private IRFID RFID;
         CJ2Compolet cj2;
         private ISetting Settings;
-        RFIDModel rfid;
+        RFIDModel rfid = null;
         string statusAllergen = "Yes";
 
         Label txtMsg = new Label();
@@ -260,9 +261,28 @@ namespace SKTRFIDSERVER
                         data_dump.area_id = Setting.area_id;
                         data_dump.crop_year = Setting.crop_year;
                         data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
-                        
+
                         // Run API Service
-                        rfid = await CallAPI(data_dump);
+                        bool _checkInternet = checkInternet();
+                        //RFIDModel rfid = null;
+                        if (_checkInternet)
+                        {
+                            rfid = await CallAPI(data_dump);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                SoundPlayer dump_wave_file = new SoundPlayer();
+                                dump_wave_file.SoundLocation = Path.Combine(path, $"voice\\noserver.wav");
+                                dump_wave_file.PlaySync();
+                            }
+                            catch
+                            {
+
+                            }
+                            return;
+                        }                                   
 
                         //Check Allergen
                         if(rfid.Data[0].Allergen != "No")
@@ -302,25 +322,47 @@ namespace SKTRFIDSERVER
                                     // Clear PLC
                                     if (phase == 1)
                                     {
-                                        string[] dump_plc = new string[7] { "auto_dump01" ,
-                                                                            "auto_dump02" ,
-                                                                            "auto_dump03" ,
-                                                                            "auto_dump04" ,
-                                                                            "auto_dump05" ,
-                                                                            "auto_dump06" ,
-                                                                            "auto_dump07" };
-                                        cj2.WriteVariable(dump_plc[dump - 1], false);
+                                        string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
+                                                                                    "TY_BF_D2" ,
+                                                                                    "TY_BF_D3" ,
+                                                                                    "TY_BF_D4" ,
+                                                                                    "TY_BF_D5" ,
+                                                                                    "TY_BF_D6" ,
+                                                                                    "TY_BF_D7" };
+                                        string _caneType = "0"; // สด
+                                        if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                        {
+                                            _caneType = "1";
+                                        }
+                                        cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
+
+                                        string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
+                                                                                    "Bar_ID2" ,
+                                                                                    "Bar_ID3" ,
+                                                                                    "Bar_ID4" ,
+                                                                                    "Bar_ID5" ,
+                                                                                    "Bar_ID6" ,
+                                                                                    "Bar_ID7" };
+                                        cj2.WriteVariable(dump_plc_Barcode[dump - 1], weight_code);
                                     }
 
                                     if (phase == 2)
                                     {
-                                        string[] dump_plc = new string[6] { "auto_dump08" ,
-                                                                            "auto_dump09" ,
-                                                                            "auto_dump10" ,
-                                                                            "auto_dump11" ,
-                                                                            "auto_dump12" ,
-                                                                            "auto_dump13" };
-                                        cj2.WriteVariable(dump_plc[dump - (1 + 7)], false);
+                                        //string[] dump_plc = new string[7] { "TY_BF_D1" ,
+                                        //                                    "TY_BF_D2" ,
+                                        //                                    "TY_BF_D3" ,
+                                        //                                    "TY_BF_D4" ,
+                                        //                                    "TY_BF_D5" ,
+                                        //                                    "TY_BF_D6" ,
+                                        //                                    "TY_BF_D7" };
+                                        //cj2.WriteVariable(dump_plc[dump - 1], false);
+                                        //string[] dump_plc = new string[6] { "auto_dump08" ,
+                                        //                                    "auto_dump09" ,
+                                        //                                    "auto_dump10" ,
+                                        //                                    "auto_dump11" ,
+                                        //                                    "auto_dump12" ,
+                                        //                                    "auto_dump13" };
+                                        //cj2.WriteVariable(dump_plc[dump - (1 + 7)], false);
                                     }
 
                                     status_write = true;
@@ -438,7 +480,7 @@ namespace SKTRFIDSERVER
             try
             {
                 HttpClient client = new HttpClient();
-                string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
+                string url = $"http://10.43.6.33/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
                 HttpResponseMessage response = await client.PostAsync(url,null);
                 if (response.IsSuccessStatusCode)
                 {
@@ -458,7 +500,7 @@ namespace SKTRFIDSERVER
             try
             {
                 HttpClient client = new HttpClient();
-                string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
+                string url = $"http://10.43.6.33/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
                 HttpResponseMessage response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
@@ -478,7 +520,7 @@ namespace SKTRFIDSERVER
             try
             {
                 HttpClient client = new HttpClient();
-                string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
+                string url = $"http://10.43.6.33/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
                 HttpResponseMessage response = await client.PutAsync(url, null);
                 if (response.IsSuccessStatusCode)
                 {
@@ -498,19 +540,19 @@ namespace SKTRFIDSERVER
             string path = Directory.GetCurrentDirectory();
             if (rfid != null)
             {
-                for (int j = 0; j < rfid.Data?[0].TruckNumber?.Length; j++)
-                {
-                    try
-                    {
-                        SoundPlayer my_wave_file = new SoundPlayer();
-                        my_wave_file.SoundLocation = Path.Combine(path, $"voice\\{rfid.Data?[0].TruckNumber?[j]}.wav");
-                        my_wave_file.PlaySync();
-                    }
-                    catch
-                    {                      
-                        continue;
-                    }
-                }
+                //for (int j = 0; j < rfid.Data?[0].TruckNumber?.Length; j++)
+                //{
+                //    try
+                //    {
+                //        SoundPlayer my_wave_file = new SoundPlayer();
+                //        my_wave_file.SoundLocation = Path.Combine(path, $"voice\\{rfid.Data?[0].TruckNumber?[j]}.wav");
+                //        my_wave_file.PlaySync();
+                //    }
+                //    catch
+                //    {                      
+                //        continue;
+                //    }
+                //}
                 
                 try
                 {
@@ -628,7 +670,7 @@ namespace SKTRFIDSERVER
 
         private async void BtnOK_Click(object sender, EventArgs e)
         {
-            DialogResult dialog = MessageBox.Show("", "", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+            DialogResult dialog = MessageBox.Show("ต้องการยืนยันหรือไม่?", "SKT RFID", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
             if (dialog == DialogResult.OK)
             {
                 //Call Form Alert Allergen
@@ -642,6 +684,23 @@ namespace SKTRFIDSERVER
                 newForm.Close();
                 btnOK.DialogResult = DialogResult.OK;
 
+            }
+        }
+        bool checkInternet()
+        {
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    using (client.OpenRead("http://10.43.6.33/"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
     }

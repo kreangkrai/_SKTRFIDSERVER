@@ -10,7 +10,7 @@ namespace SKTRFIDCOMMON.Service
     {
         public static string data_source()
         {
-            return "Data Source=DESKTOP-6ODC3E6\\SQLEXPRESS;Initial Catalog=SKT;User ID=sa;Password=contrologic;Trusted_Connection=False;MultipleActiveResultSets=true;integrated security=SSPI";
+            return "Data Source=DESKTOP-M6NATK6;Initial Catalog=SKT;User ID=sa;Password=contrologic;Trusted_Connection=False;MultipleActiveResultSets=true;integrated security=SSPI";
         }
     }
 }

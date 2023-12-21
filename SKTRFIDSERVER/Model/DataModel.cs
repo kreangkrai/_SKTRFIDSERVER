@@ -9,6 +9,7 @@ namespace SKTRFIDSERVER.Model
     public class DataModel
     {
         public string dump_id { get; set; }
+        public int no { get; set; }
         public int area_id { get; set; }
         public string crop_year { get; set; }
         public string rfid { get; set; }
