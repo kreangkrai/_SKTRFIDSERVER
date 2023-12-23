@@ -710,7 +710,7 @@ namespace SKTRFIDLIB.Service
                 reader.NodeId,
                 GetMethodNodeId(reader.NodeId, AIM.AutoId.BrowseNames.WriteTag),
                 inputArguments,
-                new RequestSettings() { OperationTimeout = 60000 * 10 },
+                new RequestSettings() { OperationTimeout = 60000},
                 out List<StatusCode> inputArgumentErrors,
                 out outputArguments);
             }
