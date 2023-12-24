@@ -127,7 +127,71 @@ namespace SKTRFIDTAG
                 }
             }
         }
+        private async void btnRead_Click(object sender, EventArgs e)
+        {
+            if (readers != null)
+            {
+                SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
+                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, true);
+                if (tuple.Item1.Status == "SUCCESS")
+                {
+                    tag_id = tuple.Item1.Tags[0].IdentiferString;
+                    SelectedTag = tuple.Item1.Tags[0];
 
+                    string read_tag = "";
+                    try
+                    {
+                        var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
+                        if (result_read.Item2.IsGood)
+                        {
+                            read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
+                            txtTag.Text = read_tag;
+
+                            string tag = read_tag;
+                            string rfid_code = string.Empty;
+                            string license_plate1 = string.Empty;
+                            string license_plate2 = string.Empty;
+                            string license_plate3 = string.Empty;
+                            string truck_type = string.Empty;
+                            string weight_code = string.Empty;
+                            string cane_type = string.Empty;
+                            string weight_type = string.Empty;
+                            string queue_status = string.Empty;
+                            string dump_no = string.Empty;
+
+                            rfid_code = int.Parse(tag.Substring(0, 4), System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
+                            license_plate1 = "XX";
+                            license_plate2 = tag.Substring(8, 2);
+                            license_plate3 = tag.Substring(10, 4);
+                            truck_type = tag.Substring(14, 1);
+                            weight_code = tag.Substring(15, 5);
+                            cane_type = tag.Substring(20, 1);
+                            weight_type = tag.Substring(21, 1);
+                            queue_status = tag.Substring(22, 1);
+                            dump_no = tag.Substring(23, 1);
+
+                            txtRFID.Text = rfid_code;
+                            txtTruck.Text = license_plate1 + int.Parse(license_plate2, System.Globalization.NumberStyles.HexNumber).ToString() + "-" +
+                                                            int.Parse(license_plate3, System.Globalization.NumberStyles.HexNumber).ToString();
+                            txtTypeTruck.Text = truckType(Int32.Parse(truck_type));
+                            txtBarcode.Text = int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString();
+                            txtTypeCane.Text = CaneType(Int32.Parse(cane_type));
+                            txtTypeWeight.Text = weightType(Int32.Parse(weight_type));
+                            txtQueue.Text = queueStatus(Int32.Parse(queue_status));
+
+                        }
+                        else
+                        {
+                            MessageBox.Show("Error");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+            }
+        }
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             btnWrite.Enabled = true;

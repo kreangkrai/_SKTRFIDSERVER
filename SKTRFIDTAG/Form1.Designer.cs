@@ -29,11 +29,11 @@ namespace SKTRFIDTAG
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle41 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle42 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle43 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle44 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle45 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label7 = new System.Windows.Forms.Label();
             this.txtTag = new System.Windows.Forms.TextBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -62,6 +62,7 @@ namespace SKTRFIDTAG
             this.label3 = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusConnect = new System.Windows.Forms.ToolStripStatusLabel();
+            this.btnRead = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -82,7 +83,7 @@ namespace SKTRFIDTAG
             // txtTag
             // 
             this.txtTag.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTag.Location = new System.Drawing.Point(363, 463);
+            this.txtTag.Location = new System.Drawing.Point(365, 472);
             this.txtTag.Name = "txtTag";
             this.txtTag.ReadOnly = true;
             this.txtTag.Size = new System.Drawing.Size(330, 44);
@@ -91,14 +92,15 @@ namespace SKTRFIDTAG
             // 
             // richTextBox1
             // 
+            this.richTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBox1.Font = new System.Drawing.Font("Angsana New", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(15, 43);
+            this.richTextBox1.Location = new System.Drawing.Point(6, 43);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(300, 132);
+            this.richTextBox1.Size = new System.Drawing.Size(318, 133);
             this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "1. วางบัตร RFID ลงในเครื่องอ่านเขียนบัตรตัวที่ 8\n2. เลือกข้อมูลบัตรที่ตรงกับเลขบั" +
-    "ตร RFID\n3. กดเขียนบัตร\n";
+            this.richTextBox1.Text = "1. วางบัตร RFID ลงในเครื่องอ่านเขียนบัตรตัว common\n2. เลือกข้อมูลบัตรที่ตรงกับเลข" +
+    "บัตร RFID\n3. กดเขียนบัตร , อ่านบัตร";
             // 
             // groupBox2
             // 
@@ -117,9 +119,9 @@ namespace SKTRFIDTAG
             this.btnWrite.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnWrite.Enabled = false;
             this.btnWrite.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnWrite.Location = new System.Drawing.Point(363, 538);
+            this.btnWrite.Location = new System.Drawing.Point(365, 541);
             this.btnWrite.Name = "btnWrite";
-            this.btnWrite.Size = new System.Drawing.Size(330, 95);
+            this.btnWrite.Size = new System.Drawing.Size(165, 95);
             this.btnWrite.TabIndex = 32;
             this.btnWrite.Text = "เขียนบัตร";
             this.btnWrite.UseVisualStyleBackColor = false;
@@ -266,9 +268,9 @@ namespace SKTRFIDTAG
             // 
             // tag_date
             // 
-            dataGridViewCellStyle41.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle41.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tag_date.DefaultCellStyle = dataGridViewCellStyle41;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tag_date.DefaultCellStyle = dataGridViewCellStyle6;
             this.tag_date.HeaderText = "วันที่";
             this.tag_date.MinimumWidth = 20;
             this.tag_date.Name = "tag_date";
@@ -277,18 +279,18 @@ namespace SKTRFIDTAG
             // 
             // rfid
             // 
-            dataGridViewCellStyle42.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle42.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rfid.DefaultCellStyle = dataGridViewCellStyle42;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rfid.DefaultCellStyle = dataGridViewCellStyle7;
             this.rfid.HeaderText = "RFID";
             this.rfid.Name = "rfid";
             this.rfid.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // tag
             // 
-            dataGridViewCellStyle43.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle43.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tag.DefaultCellStyle = dataGridViewCellStyle43;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tag.DefaultCellStyle = dataGridViewCellStyle8;
             this.tag.HeaderText = "ข้อมูลบัตร";
             this.tag.MinimumWidth = 24;
             this.tag.Name = "tag";
@@ -297,10 +299,10 @@ namespace SKTRFIDTAG
             // 
             // no
             // 
-            dataGridViewCellStyle44.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle44.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle44.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.no.DefaultCellStyle = dataGridViewCellStyle44;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.no.DefaultCellStyle = dataGridViewCellStyle9;
             this.no.HeaderText = "ลำดับ";
             this.no.Name = "no";
             this.no.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -309,14 +311,14 @@ namespace SKTRFIDTAG
             // dataGridView1
             // 
             this.dataGridView1.BackgroundColor = System.Drawing.Color.LightGray;
-            dataGridViewCellStyle45.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle45.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            dataGridViewCellStyle45.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle45.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle45.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle45.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle45.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle45;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.no,
@@ -353,7 +355,7 @@ namespace SKTRFIDTAG
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusConnect});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 645);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 644);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(708, 22);
             this.statusStrip1.TabIndex = 35;
@@ -366,11 +368,26 @@ namespace SKTRFIDTAG
             this.toolStripStatusConnect.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.toolStripStatusConnect.Size = new System.Drawing.Size(0, 17);
             // 
+            // btnRead
+            // 
+            this.btnRead.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.btnRead.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnRead.Enabled = false;
+            this.btnRead.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRead.Location = new System.Drawing.Point(530, 541);
+            this.btnRead.Name = "btnRead";
+            this.btnRead.Size = new System.Drawing.Size(165, 95);
+            this.btnRead.TabIndex = 36;
+            this.btnRead.Text = "อ่านบัตร";
+            this.btnRead.UseVisualStyleBackColor = false;
+            this.btnRead.Click += new System.EventHandler(this.btnRead_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(708, 667);
+            this.ClientSize = new System.Drawing.Size(708, 666);
+            this.Controls.Add(this.btnRead);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.txtTag);
             this.Controls.Add(this.groupBox2);
@@ -426,6 +443,7 @@ namespace SKTRFIDTAG
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusConnect;
+        private System.Windows.Forms.Button btnRead;
     }
 }
 

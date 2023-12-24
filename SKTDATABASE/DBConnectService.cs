@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SKTRFIDSERVER.Service
+namespace SKTDATABASE
 {
     public static class DBConnectService
     {

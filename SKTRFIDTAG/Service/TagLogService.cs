@@ -1,4 +1,5 @@
-﻿using SKTRFIDTAG.Interface;
+﻿using SKTDATABASE;
+using SKTRFIDTAG.Interface;
 using SKTRFIDTAG.Model;
 using System;
 using System.Collections.Generic;

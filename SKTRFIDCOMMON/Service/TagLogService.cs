@@ -1,4 +1,5 @@
-﻿using SKTRFIDCOMMON.Interface;
+﻿using SKTDATABASE;
+using SKTRFIDCOMMON.Interface;
 using SKTRFIDCOMMON.Model;
 using System;
 using System.Collections.Generic;

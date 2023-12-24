@@ -1,4 +1,5 @@
-﻿using SKTRFIDSERVER.Interface;
+﻿using SKTDATABASE;
+using SKTRFIDSERVER.Interface;
 using SKTRFIDSERVER.Model;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace SKTRFIDSERVER.Service
                         cn.Open();
                     }
 
-                    SqlCommand cmd = new SqlCommand($@"INSERT INTO tb_rfid_log VALUES('{data.no}','{data.dump_id}','{data.area_id}',
+                    SqlCommand cmd = new SqlCommand($@"INSERT INTO tb_rfid_log VALUES('{data.dump_id}','{data.area_id}',
                                                                                       '{data.crop_year}','{data.rfid}','{data.barcode}',
                                                                                       '{data.cane_type}','{data.allergen}','{data.truck_number}',
                                                                                       '{data.truck_type}','{data.weight_type}','{data.queue_status}','{data.rfid_lastdate}')", cn);

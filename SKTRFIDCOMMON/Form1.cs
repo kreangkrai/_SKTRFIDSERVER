@@ -281,7 +281,7 @@ namespace SKTRFIDCOMMON
                             #region API
 
                             DataModel data_dump = new DataModel();
-                            data_dump.dump_id = dump.ToString();
+                            data_dump.dump_id = dump;
                             data_dump.area_id = Setting.area_id;
                             data_dump.crop_year = Setting.crop_year;
                             data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
@@ -322,19 +322,40 @@ namespace SKTRFIDCOMMON
                                 DataUpdateModel dataUpdate = await UpdateAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, phase, dump, "ADD");
                                 if (dataUpdate != null)
                                 {
+                                    DateTime now = DateTime.Now;
                                     //Update Data To Database
                                     DataModel dataDump = new DataModel();
-                                    dataDump.dump_id = dump.ToString();
+                                    dataDump.dump_id = dump;
                                     dataDump.rfid = data_dump.rfid;
                                     dataDump.truck_number = rfid.Data[0].TruckNumber;
-                                    dataDump.rfid_lastdate = DateTime.Now;
+                                    dataDump.rfid_lastdate = now;
                                     dataDump.cane_type = Int32.Parse(rfid.Data[0].CaneType);
                                     dataDump.allergen = rfid.Data[0].Allergen;
                                     dataDump.barcode = rfid.Data[0].Barcode;
                                     dataDump.truck_type = Convert.ToInt32(truck_type);
                                     dataDump.weight_type = Convert.ToInt32(weight_type);
                                     dataDump.queue_status = 3;
-                                    string message = RFID.UpdateRFID(dataDump);
+                                    string message_update = RFID.UpdateRFID(dataDump);
+
+                                    //Insert Data RFID Log
+
+                                    DataModel data_rfid = new DataModel()
+                                    {
+                                        dump_id = dump,
+                                        area_id = Setting.area_id,
+                                        crop_year = Setting.crop_year,
+                                        allergen = rfid.Data[0].Allergen,
+                                        truck_number = rfid.Data[0].TruckNumber,
+                                        barcode = rfid.Data[0].Barcode,
+                                        cane_type = Int32.Parse(rfid.Data[0].CaneType),
+                                        weight_type = Convert.ToInt32(weight_type),
+                                        truck_type = Convert.ToInt32(truck_type),
+                                        rfid = data_dump.rfid,
+                                        queue_status = 3,
+                                        rfid_lastdate = now
+                                    };
+
+                                    string message_insert = RFID.InsertRFIDLog(data_rfid);
                                 }
                                 else
                                 {
