@@ -19,6 +19,7 @@ namespace SKTRFIDTAG
     public partial class Form1 : Form
     {
         private ITagLog TagLog;
+        private ISetting Setting;
         List<TagLogModel> tags = new List<TagLogModel>();
         static List<Reader> Readers = new List<Reader>();
         static RfidTag SelectedTag = null;
@@ -30,6 +31,7 @@ namespace SKTRFIDTAG
         {
             InitializeComponent();
             TagLog = new TagLogService();
+            Setting = new SettingService();
         }
 
         private void txtSearchRFID_TextChanged(object sender, EventArgs e)
@@ -194,7 +196,10 @@ namespace SKTRFIDTAG
         }
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            btnWrite.Enabled = true;
+            if (toolStripStatusConnect.Text == "Connected")
+            {
+                btnWrite.Enabled = true;               
+            }
             if (e.RowIndex > -1)
             {
                 string tag = tags[e.RowIndex].tag;
@@ -278,21 +283,31 @@ namespace SKTRFIDTAG
             return queues_status[n];
         }
 
-        private async void Form1_Load(object sender, EventArgs e)
-        {
-            if (await OpcUaService.Instance.ConnectAsync("192.168.250.103", 4840))
+        private void Form1_Load(object sender, EventArgs e)
+        {           
+            SettingModel setting = Setting.GetSetting();
+            try
             {
-                RefreshReaderListCommandExecute();
-                readers = Readers.Where(w => w.Ident == "Ident 3").FirstOrDefault();
+                bool connect =  OpcUaService.Instance.Connect(setting.ip2, 4840);
+                if (connect)
+                {
+                    RefreshReaderListCommandExecute();
+                    readers = Readers.Where(w => w.Ident == "Ident 3").FirstOrDefault();
 
-                if (readers != null)
-                {
-                    toolStripStatusConnect.Text = "Connected";
+                    if (readers != null)
+                    {
+                        toolStripStatusConnect.Text = "Connected";
+                        btnRead.Enabled = true;
+                    }
+                    else
+                    {
+                        toolStripStatusConnect.Text = "Disconnect";
+                    }
                 }
-                else
-                {
-                    toolStripStatusConnect.Text = "Disconnect";
-                }
+            }
+            catch
+            {
+                toolStripStatusConnect.Text = "Disconnect";
             }
         }
         private static void RefreshReaderListCommandExecute()

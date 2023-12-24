@@ -307,29 +307,36 @@ namespace SKTRFIDSERVER
 
                                                                 if (phase == 2)
                                                                 {
-                                                                    //string[] dump_plc = new string[7] { "TY_BF_D1" ,
-                                                                    //                                    "TY_BF_D2" ,
-                                                                    //                                    "TY_BF_D3" ,
-                                                                    //                                    "TY_BF_D4" ,
-                                                                    //                                    "TY_BF_D5" ,
-                                                                    //                                    "TY_BF_D6" ,
-                                                                    //                                    "TY_BF_D7" };
-                                                                    //cj2.WriteVariable(dump_plc[dump - 1], false);
-                                                                    //string[] dump_plc = new string[6] { "auto_dump08" ,
-                                                                    //                                    "auto_dump09" ,
-                                                                    //                                    "auto_dump10" ,
-                                                                    //                                    "auto_dump11" ,
-                                                                    //                                    "auto_dump12" ,
-                                                                    //                                    "auto_dump13" };
-                                                                    //cj2.WriteVariable(dump_plc[dump - (1 + 7)], false);
+                                                                    string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
+                                                                                                                "TY_BF_D2" ,
+                                                                                                                "TY_BF_D3" ,
+                                                                                                                "TY_BF_D4" ,
+                                                                                                                "TY_BF_D5" ,
+                                                                                                                "TY_BF_D6" ,
+                                                                                                                "TY_BF_D7" };
+                                                                    string _caneType = "0"; // สด
+                                                                    if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                                                    {
+                                                                        _caneType = "1";
+                                                                    }
+                                                                    cj2.WriteVariable(dump_plc_caneType[dump - (1+7)], _caneType);
+
+                                                                    string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
+                                                                                    "Bar_ID2" ,
+                                                                                    "Bar_ID3" ,
+                                                                                    "Bar_ID4" ,
+                                                                                    "Bar_ID5" ,
+                                                                                    "Bar_ID6" ,
+                                                                                    "Bar_ID7" };
+                                                                    cj2.WriteVariable(dump_plc_Barcode[dump - (1+7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
                                                                 }
                                                                 status_write = true;
                                                             }
                                                         }
                                                     }
-                                                    catch(Exception ex)
+                                                    catch
                                                     {
-                                                        MessageBox.Show(ex.Message);
+                                                        //MessageBox.Show(ex.Message);
                                                     }
                                                 }
                                             }
@@ -338,10 +345,9 @@ namespace SKTRFIDSERVER
                                 }
                             }
 
-                            catch (Exception ex)
+                            catch
                             {
-                                string loca = @"D:\log.txt";
-                                File.AppendAllText(loca, server + " " + dump + " " + DateTime.Now + " " + ex.Message + Environment.NewLine);
+                                
                             }
 
                         }
@@ -356,9 +362,9 @@ namespace SKTRFIDSERVER
                         data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
 
                         // Run API Service
-                        //bool _checkInternet = checkInternet();
+                        bool _checkInternet = checkInternet();
                         //RFIDModel rfid = null;
-                        bool _checkInternet = true;
+                        //bool _checkInternet = true;
                         if (_checkInternet)
                         {
                             rfid = await CallAPI(data_dump);
@@ -476,8 +482,7 @@ namespace SKTRFIDSERVER
                         {
 
                         }
-                    }
-                    
+                    }                   
                 }
             }
             catch (OpcUaServiceException ex)
@@ -509,8 +514,8 @@ namespace SKTRFIDSERVER
             try
             {
                 HttpClient client = new HttpClient();
-                //string url = $"http://10.43.6.33/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
-                string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
+                string url = $"http://10.43.6.33/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
+                //string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
                 HttpResponseMessage response = await client.PostAsync(url,null);
                 if (response.IsSuccessStatusCode)
                 {
@@ -530,8 +535,8 @@ namespace SKTRFIDSERVER
             try
             {
                 HttpClient client = new HttpClient();
-                //string url = $"http://10.43.6.33/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
-                string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
+                string url = $"http://10.43.6.33/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
+                //string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
                 HttpResponseMessage response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
@@ -551,8 +556,8 @@ namespace SKTRFIDSERVER
             try
             {
                 HttpClient client = new HttpClient();
-                //string url = $"http://10.43.6.33/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
-                string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
+                string url = $"http://10.43.6.33/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
+                //string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
                 HttpResponseMessage response = await client.PutAsync(url, null);
                 if (response.IsSuccessStatusCode)
                 {

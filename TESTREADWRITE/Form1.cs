@@ -20,7 +20,7 @@ namespace TESTREADWRITE
         string tag_id = "";
         Reader SelectedReader = null;
         bool writer = false;
-        bool reader = false;
+        //bool reader = false;
         public Form1()
         {
             InitializeComponent();

@@ -29,11 +29,11 @@ namespace SKTRFIDTAG
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label7 = new System.Windows.Forms.Label();
             this.txtTag = new System.Windows.Forms.TextBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -131,6 +131,7 @@ namespace SKTRFIDTAG
             // 
             this.txtQueue.Location = new System.Drawing.Point(133, 321);
             this.txtQueue.Name = "txtQueue";
+            this.txtQueue.ReadOnly = true;
             this.txtQueue.Size = new System.Drawing.Size(155, 44);
             this.txtQueue.TabIndex = 27;
             // 
@@ -193,6 +194,7 @@ namespace SKTRFIDTAG
             // 
             this.txtTypeWeight.Location = new System.Drawing.Point(133, 272);
             this.txtTypeWeight.Name = "txtTypeWeight";
+            this.txtTypeWeight.ReadOnly = true;
             this.txtTypeWeight.Size = new System.Drawing.Size(155, 44);
             this.txtTypeWeight.TabIndex = 21;
             // 
@@ -211,6 +213,7 @@ namespace SKTRFIDTAG
             // 
             this.txtTypeCane.Location = new System.Drawing.Point(133, 225);
             this.txtTypeCane.Name = "txtTypeCane";
+            this.txtTypeCane.ReadOnly = true;
             this.txtTypeCane.Size = new System.Drawing.Size(155, 44);
             this.txtTypeCane.TabIndex = 4;
             // 
@@ -218,6 +221,7 @@ namespace SKTRFIDTAG
             // 
             this.txtTypeTruck.Location = new System.Drawing.Point(133, 131);
             this.txtTypeTruck.Name = "txtTypeTruck";
+            this.txtTypeTruck.ReadOnly = true;
             this.txtTypeTruck.Size = new System.Drawing.Size(155, 44);
             this.txtTypeTruck.TabIndex = 2;
             // 
@@ -225,6 +229,7 @@ namespace SKTRFIDTAG
             // 
             this.txtTruck.Location = new System.Drawing.Point(133, 84);
             this.txtTruck.Name = "txtTruck";
+            this.txtTruck.ReadOnly = true;
             this.txtTruck.Size = new System.Drawing.Size(155, 44);
             this.txtTruck.TabIndex = 1;
             // 
@@ -232,6 +237,7 @@ namespace SKTRFIDTAG
             // 
             this.txtRFID.Location = new System.Drawing.Point(133, 37);
             this.txtRFID.Name = "txtRFID";
+            this.txtRFID.ReadOnly = true;
             this.txtRFID.Size = new System.Drawing.Size(155, 44);
             this.txtRFID.TabIndex = 0;
             // 
@@ -263,14 +269,15 @@ namespace SKTRFIDTAG
             // 
             this.txtBarcode.Location = new System.Drawing.Point(133, 178);
             this.txtBarcode.Name = "txtBarcode";
+            this.txtBarcode.ReadOnly = true;
             this.txtBarcode.Size = new System.Drawing.Size(155, 44);
             this.txtBarcode.TabIndex = 3;
             // 
             // tag_date
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tag_date.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tag_date.DefaultCellStyle = dataGridViewCellStyle1;
             this.tag_date.HeaderText = "วันที่";
             this.tag_date.MinimumWidth = 20;
             this.tag_date.Name = "tag_date";
@@ -279,18 +286,18 @@ namespace SKTRFIDTAG
             // 
             // rfid
             // 
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rfid.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rfid.DefaultCellStyle = dataGridViewCellStyle2;
             this.rfid.HeaderText = "RFID";
             this.rfid.Name = "rfid";
             this.rfid.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // tag
             // 
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tag.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tag.DefaultCellStyle = dataGridViewCellStyle3;
             this.tag.HeaderText = "ข้อมูลบัตร";
             this.tag.MinimumWidth = 24;
             this.tag.Name = "tag";
@@ -299,10 +306,10 @@ namespace SKTRFIDTAG
             // 
             // no
             // 
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle9.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.no.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.no.DefaultCellStyle = dataGridViewCellStyle4;
             this.no.HeaderText = "ลำดับ";
             this.no.Name = "no";
             this.no.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -311,14 +318,14 @@ namespace SKTRFIDTAG
             // dataGridView1
             // 
             this.dataGridView1.BackgroundColor = System.Drawing.Color.LightGray;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Angsana New", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.no,
