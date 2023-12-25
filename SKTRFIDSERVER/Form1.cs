@@ -182,8 +182,9 @@ namespace SKTRFIDSERVER
                         bool checkOnceTag = true;
                         while (status_write == false)
                         {
+
                             try
-                            {                                
+                            {
                                 if (readers != null)
                                 {
                                     SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
@@ -206,6 +207,7 @@ namespace SKTRFIDSERVER
                                                 rfid = rfid
                                             };
                                             string message = TagLog.InsertTag(taglog);
+
                                         }
 
                                         if (origin_tag.Length >= 12 * 2)
@@ -238,7 +240,60 @@ namespace SKTRFIDSERVER
 
                                         queue_status = "3";
                                         dump_no = dump.ToString("x").ToUpper();
-                                        //string data_write = "178C8375510A4F129E812031";
+
+
+                                        //if (phase == 1)
+                                        //{
+                                        //    string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
+                                        //                                            "TY_BF_D2" ,
+                                        //                                            "TY_BF_D3" ,
+                                        //                                            "TY_BF_D4" ,
+                                        //                                            "TY_BF_D5" ,
+                                        //                                            "TY_BF_D6" ,
+                                        //                                            "TY_BF_D7" };
+                                        //    string _caneType = "0"; // สด
+                                        //    if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                        //    {
+                                        //        _caneType = "1";
+                                        //    }
+                                        //    cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
+
+                                        //    string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
+                                        //                                            "Bar_ID2" ,
+                                        //                                            "Bar_ID3" ,
+                                        //                                            "Bar_ID4" ,
+                                        //                                            "Bar_ID5" ,
+                                        //                                            "Bar_ID6" ,
+                                        //                                            "Bar_ID7" };
+                                        //    cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                        //}
+
+                                        //if (phase == 2)
+                                        //{
+                                        //    string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
+                                        //                                                                        "TY_BF_D2" ,
+                                        //                                                                        "TY_BF_D3" ,
+                                        //                                                                        "TY_BF_D4" ,
+                                        //                                                                        "TY_BF_D5" ,
+                                        //                                                                        "TY_BF_D6" ,
+                                        //                                                                        "TY_BF_D7" };
+                                        //    string _caneType = "0"; // สด
+                                        //    if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                        //    {
+                                        //        _caneType = "1";
+                                        //    }
+                                        //    cj2.WriteVariable(dump_plc_caneType[dump - (1 + 7)], _caneType);
+
+                                        //    string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
+                                        //                                            "Bar_ID2" ,
+                                        //                                            "Bar_ID3" ,
+                                        //                                            "Bar_ID4" ,
+                                        //                                            "Bar_ID5" ,
+                                        //                                            "Bar_ID6" ,
+                                        //                                            "Bar_ID7" };
+                                        //    cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+
+                                        ////string data_write = "178C8375510A4F129E812031";
                                         string data_write = rfid_code +
                                                             license_plate1 +
                                                             license_plate2 +
@@ -282,12 +337,12 @@ namespace SKTRFIDSERVER
                                                                 if (phase == 1)
                                                                 {
                                                                     string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
-                                                                                    "TY_BF_D2" ,
-                                                                                    "TY_BF_D3" ,
-                                                                                    "TY_BF_D4" ,
-                                                                                    "TY_BF_D5" ,
-                                                                                    "TY_BF_D6" ,
-                                                                                    "TY_BF_D7" };
+                                                                                        "TY_BF_D2" ,
+                                                                                        "TY_BF_D3" ,
+                                                                                        "TY_BF_D4" ,
+                                                                                        "TY_BF_D5" ,
+                                                                                        "TY_BF_D6" ,
+                                                                                        "TY_BF_D7" };
                                                                     string _caneType = "0"; // สด
                                                                     if (cane_type == "1" || cane_type == "3") // ไฟไหม้
                                                                     {
@@ -296,39 +351,39 @@ namespace SKTRFIDSERVER
                                                                     cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
 
                                                                     string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
-                                                                                    "Bar_ID2" ,
-                                                                                    "Bar_ID3" ,
-                                                                                    "Bar_ID4" ,
-                                                                                    "Bar_ID5" ,
-                                                                                    "Bar_ID6" ,
-                                                                                    "Bar_ID7" };
+                                                                                        "Bar_ID2" ,
+                                                                                        "Bar_ID3" ,
+                                                                                        "Bar_ID4" ,
+                                                                                        "Bar_ID5" ,
+                                                                                        "Bar_ID6" ,
+                                                                                        "Bar_ID7" };
                                                                     cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
                                                                 }
 
                                                                 if (phase == 2)
                                                                 {
                                                                     string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
-                                                                                                                "TY_BF_D2" ,
-                                                                                                                "TY_BF_D3" ,
-                                                                                                                "TY_BF_D4" ,
-                                                                                                                "TY_BF_D5" ,
-                                                                                                                "TY_BF_D6" ,
-                                                                                                                "TY_BF_D7" };
+                                                                                                                    "TY_BF_D2" ,
+                                                                                                                    "TY_BF_D3" ,
+                                                                                                                    "TY_BF_D4" ,
+                                                                                                                    "TY_BF_D5" ,
+                                                                                                                    "TY_BF_D6" ,
+                                                                                                                    "TY_BF_D7" };
                                                                     string _caneType = "0"; // สด
                                                                     if (cane_type == "1" || cane_type == "3") // ไฟไหม้
                                                                     {
                                                                         _caneType = "1";
                                                                     }
-                                                                    cj2.WriteVariable(dump_plc_caneType[dump - (1+7)], _caneType);
+                                                                    cj2.WriteVariable(dump_plc_caneType[dump - (1 + 7)], _caneType);
 
                                                                     string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
-                                                                                    "Bar_ID2" ,
-                                                                                    "Bar_ID3" ,
-                                                                                    "Bar_ID4" ,
-                                                                                    "Bar_ID5" ,
-                                                                                    "Bar_ID6" ,
-                                                                                    "Bar_ID7" };
-                                                                    cj2.WriteVariable(dump_plc_Barcode[dump - (1+7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                                                                        "Bar_ID2" ,
+                                                                                        "Bar_ID3" ,
+                                                                                        "Bar_ID4" ,
+                                                                                        "Bar_ID5" ,
+                                                                                        "Bar_ID6" ,
+                                                                                        "Bar_ID7" };
+                                                                    cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
                                                                 }
                                                                 status_write = true;
                                                             }
@@ -345,9 +400,10 @@ namespace SKTRFIDSERVER
                                 }
                             }
 
+
                             catch
                             {
-                                
+
                             }
 
                         }
