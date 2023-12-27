@@ -1,8 +1,8 @@
 ﻿using SKTRFIDLIB.Model;
 using SKTRFIDLIB.Service;
-using SKTRFIDTAG.Interface;
-using SKTRFIDTAG.Model;
-using SKTRFIDTAG.Service;
+using SKTRFIDLIBRARY.Interface;
+using SKTRFIDLIBRARY.Model;
+using SKTRFIDLIBRARY.Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,6 +18,8 @@ namespace SKTRFIDTAG
 {
     public partial class Form1 : Form
     {
+        int phase = 0;
+        private IAccessory Accessory;
         private ITagLog TagLog;
         private ISetting Setting;
         List<TagLogModel> tags = new List<TagLogModel>();
@@ -27,11 +29,14 @@ namespace SKTRFIDTAG
         string tag_id = "";
         Reader SelectedReader = null;
         bool writer = false;
-        public Form1()
+        public Form1(string _phase)
         {
             InitializeComponent();
-            TagLog = new TagLogService();
-            Setting = new SettingService();
+            phase = Int32.Parse(_phase);
+            Accessory = new AccessoryService();
+            TagLog = new TagLogService(phase);
+            Setting = new SettingService(phase);
+            this.Text = "SKT RFID TAG PHASE " + phase;
         }
 
         private void txtSearchRFID_TextChanged(object sender, EventArgs e)
@@ -148,39 +153,15 @@ namespace SKTRFIDTAG
                         {
                             read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
                             txtTag.Text = read_tag;
-
-                            string tag = read_tag;
-                            string rfid_code = string.Empty;
-                            string license_plate1 = string.Empty;
-                            string license_plate2 = string.Empty;
-                            string license_plate3 = string.Empty;
-                            string truck_type = string.Empty;
-                            string weight_code = string.Empty;
-                            string cane_type = string.Empty;
-                            string weight_type = string.Empty;
-                            string queue_status = string.Empty;
-                            string dump_no = string.Empty;
-
-                            rfid_code = int.Parse(tag.Substring(0, 4), System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
-                            license_plate1 = "XX";
-                            license_plate2 = tag.Substring(8, 2);
-                            license_plate3 = tag.Substring(10, 4);
-                            truck_type = tag.Substring(14, 1);
-                            weight_code = tag.Substring(15, 5);
-                            cane_type = tag.Substring(20, 1);
-                            weight_type = tag.Substring(21, 1);
-                            queue_status = tag.Substring(22, 1);
-                            dump_no = tag.Substring(23, 1);
-
-                            txtRFID.Text = rfid_code;
-                            txtTruck.Text = license_plate1 + int.Parse(license_plate2, System.Globalization.NumberStyles.HexNumber).ToString() + "-" +
-                                                            int.Parse(license_plate3, System.Globalization.NumberStyles.HexNumber).ToString();
-                            txtTypeTruck.Text = truckType(Int32.Parse(truck_type));
-                            txtBarcode.Text = int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString();
-                            txtTypeCane.Text = CaneType(Int32.Parse(cane_type));
-                            txtTypeWeight.Text = weightType(Int32.Parse(weight_type));
-                            txtQueue.Text = queueStatus(Int32.Parse(queue_status));
-
+                            DataModel data = Accessory.ReadDataRFIDCard(read_tag);
+                            
+                            txtRFID.Text = data.rfid;
+                            txtTruck.Text = data.truck_number;
+                            txtTypeTruck.Text = truckType(data.truck_type);
+                            txtBarcode.Text = data.barcode;
+                            txtTypeCane.Text = CaneType(data.cane_type);
+                            txtTypeWeight.Text = weightType(data.weight_type);
+                            txtQueue.Text = queueStatus(data.queue_status);
                         }
                         else
                         {
@@ -203,38 +184,15 @@ namespace SKTRFIDTAG
             if (e.RowIndex > -1)
             {
                 string tag = tags[e.RowIndex].tag;
-                string rfid_code = string.Empty;
-                string license_plate1 = string.Empty;
-                string license_plate2 = string.Empty;
-                string license_plate3 = string.Empty;
-                string truck_type = string.Empty;
-                string weight_code = string.Empty;
-                string cane_type = string.Empty;
-                string weight_type = string.Empty;
-                string queue_status = string.Empty;
-                string dump_no = string.Empty;
+                DataModel data = Accessory.ReadDataRFIDCard(tag);
 
-                rfid_code = int.Parse(tag.Substring(0, 4), System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
-                license_plate1 = "XX";
-                license_plate2 = tag.Substring(8, 2);
-                license_plate3 = tag.Substring(10, 4);
-                truck_type = tag.Substring(14, 1);
-                weight_code = tag.Substring(15, 5);
-                cane_type = tag.Substring(20, 1);
-                weight_type = tag.Substring(21, 1);
-                queue_status = tag.Substring(22, 1);
-                dump_no = "0";
-
-                txtRFID.Text = rfid_code;
-                txtTruck.Text = license_plate1 + int.Parse(license_plate2, System.Globalization.NumberStyles.HexNumber).ToString() + "-" +
-                                                int.Parse(license_plate3, System.Globalization.NumberStyles.HexNumber).ToString();
-                txtTypeTruck.Text = truckType(Int32.Parse(truck_type));
-                txtBarcode.Text = int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString();
-                txtTypeCane.Text = CaneType(Int32.Parse(cane_type));
-                txtTypeWeight.Text = weightType(Int32.Parse(weight_type));
-                txtQueue.Text = queueStatus(Int32.Parse(queue_status));
-
-
+                txtRFID.Text = data.rfid;
+                txtTruck.Text = data.truck_number;
+                txtTypeTruck.Text = truckType(data.truck_type);
+                txtBarcode.Text = data.barcode;
+                txtTypeCane.Text = CaneType(data.cane_type);
+                txtTypeWeight.Text = weightType(data.weight_type);
+                txtQueue.Text = queueStatus(data.queue_status);
                 txtTag.Text = tag.Substring(0, 23) + "0";
             }
         }

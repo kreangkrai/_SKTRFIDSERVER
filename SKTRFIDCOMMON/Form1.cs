@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 using OMRON.Compolet.CIP;
-using SKTRFIDCOMMON.Interface;
-using SKTRFIDCOMMON.Model;
-using SKTRFIDCOMMON.Service;
+using SKTRFIDLIBRARY.Interface;
+using SKTRFIDLIBRARY.Model;
+using SKTRFIDLIBRARY.Service;
 using SKTRFIDLIB.Model;
 using SKTRFIDLIB.Service;
 using System;
@@ -34,6 +34,9 @@ namespace SKTRFIDCOMMON
         private IRFID RFID;
         private ITagLog TagLog;
         private ISetting Settings;
+        private IAPI API;
+        private IAccessory Accessory;
+        SettingModel Setting;
         string statusAllergen = "Yes";
         RFIDModel rfid;
 
@@ -47,9 +50,11 @@ namespace SKTRFIDCOMMON
             InitializeComponent();
             dump = Convert.ToInt32(_dump);
             phase = Convert.ToInt32(_phase);
-            Settings = new SettingService();          
-            RFID = new RFIDService();
-            TagLog = new TagLogService();
+            Settings = new SettingService(phase);          
+            RFID = new RFIDService(phase);
+            TagLog = new TagLogService(phase);
+            API = new APIService();
+            Accessory = new AccessoryService();
         }
 
         private async void Form1_Load(object sender, EventArgs e)
@@ -57,7 +62,7 @@ namespace SKTRFIDCOMMON
             try
             {
                 //Get Setting
-                SettingModel Setting = Settings.GetSetting();
+                Setting = Settings.GetSetting();
                 if (Setting.no == 1)
                 {
                     server = Setting.ip2;
@@ -90,7 +95,6 @@ namespace SKTRFIDCOMMON
                     if (readers != null)
                     {
                         Reader SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
-
 
                         #region WRITE TAG
                         //Write Tag
@@ -127,16 +131,6 @@ namespace SKTRFIDCOMMON
                                         {
                                             origin_tag = tag_id;
                                             checkOnceTag = false;
-
-                                            // Log Tag
-                                            string rfid = int.Parse(origin_tag.Substring(0, 4), System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
-                                            TagLogModel taglog = new TagLogModel()
-                                            {
-                                                tag = origin_tag,
-                                                tag_date = DateTime.Now,
-                                                rfid = rfid
-                                            };
-                                            string message = TagLog.InsertTag(taglog);
                                         }
 
                                         if (origin_tag.Length >= 12 * 2)
@@ -185,8 +179,6 @@ namespace SKTRFIDCOMMON
                                                         .Select(x => Convert.ToByte(data_write.Substring(x, 2), 16))
                                                         .ToArray();
 
-
-
                                         var result_write = await OpcUaService.Instance.WriteTagAsync(SelectedReader, SelectedTag, 0, data);
                                         Thread.Sleep(500);
                                         if (result_write.Item2.IsGood)
@@ -210,15 +202,26 @@ namespace SKTRFIDCOMMON
                                                             _read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
                                                             if (_read_tag.Contains(data_write))
                                                             {
+                                                                // Insert Data Log RFID
+                                                                string _rfid = int.Parse(origin_tag.Substring(0, 4), System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
+                                                                TagLogModel taglog = new TagLogModel()
+                                                                {
+                                                                    tag = origin_tag,
+                                                                    tag_date = DateTime.Now,
+                                                                    rfid = _rfid
+                                                                };
+                                                                string message = TagLog.InsertTag(taglog);
+
+                                                                // Send Data To PLC
                                                                 if (phase == 1)
                                                                 {
                                                                     string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
-                                                                                    "TY_BF_D2" ,
-                                                                                    "TY_BF_D3" ,
-                                                                                    "TY_BF_D4" ,
-                                                                                    "TY_BF_D5" ,
-                                                                                    "TY_BF_D6" ,
-                                                                                    "TY_BF_D7" };
+                                                                                                                "TY_BF_D2" ,
+                                                                                                                "TY_BF_D3" ,
+                                                                                                                "TY_BF_D4" ,
+                                                                                                                "TY_BF_D5" ,
+                                                                                                                "TY_BF_D6" ,
+                                                                                                                "TY_BF_D7" };
                                                                     string _caneType = "0"; // สด
                                                                     if (cane_type == "1" || cane_type == "3") // ไฟไหม้
                                                                     {
@@ -227,24 +230,24 @@ namespace SKTRFIDCOMMON
                                                                     cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
 
                                                                     string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
-                                                                                    "Bar_ID2" ,
-                                                                                    "Bar_ID3" ,
-                                                                                    "Bar_ID4" ,
-                                                                                    "Bar_ID5" ,
-                                                                                    "Bar_ID6" ,
-                                                                                    "Bar_ID7" };
+                                                                                                                "Bar_ID2" ,
+                                                                                                                "Bar_ID3" ,
+                                                                                                                "Bar_ID4" ,
+                                                                                                                "Bar_ID5" ,
+                                                                                                                "Bar_ID6" ,
+                                                                                                                "Bar_ID7" };
                                                                     cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
                                                                 }
 
                                                                 if (phase == 2)
-                                                                {                                                                
+                                                                {
                                                                     string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
-                                                                                    "TY_BF_D2" ,
-                                                                                    "TY_BF_D3" ,
-                                                                                    "TY_BF_D4" ,
-                                                                                    "TY_BF_D5" ,
-                                                                                    "TY_BF_D6" ,
-                                                                                    "TY_BF_D7" };
+                                                                                                                    "TY_BF_D2" ,
+                                                                                                                    "TY_BF_D3" ,
+                                                                                                                    "TY_BF_D4" ,
+                                                                                                                    "TY_BF_D5" ,
+                                                                                                                    "TY_BF_D6" ,
+                                                                                                                    "TY_BF_D7" };
                                                                     string _caneType = "0"; // สด
                                                                     if (cane_type == "1" || cane_type == "3") // ไฟไหม้
                                                                     {
@@ -253,12 +256,12 @@ namespace SKTRFIDCOMMON
                                                                     cj2.WriteVariable(dump_plc_caneType[dump - (1 + 7)], _caneType);
 
                                                                     string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
-                                                                                    "Bar_ID2" ,
-                                                                                    "Bar_ID3" ,
-                                                                                    "Bar_ID4" ,
-                                                                                    "Bar_ID5" ,
-                                                                                    "Bar_ID6" ,
-                                                                                    "Bar_ID7" };
+                                                                                                                "Bar_ID2" ,
+                                                                                                                "Bar_ID3" ,
+                                                                                                                "Bar_ID4" ,
+                                                                                                                "Bar_ID5" ,
+                                                                                                                "Bar_ID6" ,
+                                                                                                                "Bar_ID7" };
                                                                     cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
                                                                 }
                                                                 status_write = true;
@@ -268,7 +271,7 @@ namespace SKTRFIDCOMMON
                                                     }
                                                     catch
                                                     {
-                                                        
+
                                                     }
                                                 }
                                             }
@@ -285,7 +288,7 @@ namespace SKTRFIDCOMMON
 
                             #endregion WRITE TAG
 
-                            #region API
+                            #region API AND Database
 
                             DataModel data_dump = new DataModel();
                             data_dump.dump_id = dump;
@@ -295,106 +298,79 @@ namespace SKTRFIDCOMMON
 
                             // Run API Service
                             bool _checkInternet = checkInternet();
-                            //bool _checkInternet = true;
-                            //RFIDModel rfid = null;
                             if (_checkInternet)
                             {
-                                rfid = await CallAPI(data_dump);
+                                // Call Data From API
+                                rfid = await API.CallAPI(data_dump);
+
+                                //Insert Data to API
+                                DataUpdateModel dataInsert = await API.InsertDataAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, phase, dump, "ADD");
                             }
-                            else
+                            else // Offline Read data from rfid card
                             {
+                                rfid = Accessory.ReadRFIDCard(origin_tag);
                                 try
                                 {
                                     SoundPlayer dump_wave_file = new SoundPlayer();
-                                    dump_wave_file.SoundLocation = Path.Combine(path, $"voice\\noserver.wav");
+                                    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\noserver.wav");
                                     dump_wave_file.PlaySync();
                                 }
                                 catch
                                 {
 
                                 }
-                                return;
                             }
 
+                            DateTime now = DateTime.Now;
+                            DataModel dataDump = new DataModel();
+                            dataDump.dump_id = dump;
+                            dataDump.area_id = Setting.area_id;
+                            dataDump.crop_year = Setting.crop_year;
+                            dataDump.rfid = data_dump.rfid;
+                            dataDump.truck_number = rfid.Data[0].TruckNumber;
+                            dataDump.farmer_name = rfid.Data[0].FarmerName;
+                            dataDump.rfid_lastdate = now;
+                            dataDump.cane_type = Int32.Parse(rfid.Data[0].CaneType);
+                            dataDump.allergen = rfid.Data[0].Allergen;
+                            dataDump.barcode = rfid.Data[0].Barcode;
+                            dataDump.truck_type = Convert.ToInt32(truck_type);
+                            dataDump.weight_type = Convert.ToInt32(weight_type);
+                            dataDump.queue_status = 3;
+                            string message_update = RFID.UpdateRFID(dataDump);
+
+                            //Insert Data RFID Log
+
+                            DataModel data_rfid = new DataModel()
+                            {
+                                dump_id = dump,
+                                area_id = Setting.area_id,
+                                crop_year = Setting.crop_year,
+                                allergen = rfid.Data[0].Allergen,
+                                truck_number = rfid.Data[0].TruckNumber,
+                                farmer_name = rfid.Data[0].FarmerName,
+                                barcode = rfid.Data[0].Barcode,
+                                cane_type = Int32.Parse(rfid.Data[0].CaneType),
+                                weight_type = Convert.ToInt32(weight_type),
+                                truck_type = Convert.ToInt32(truck_type),
+                                rfid = data_dump.rfid,
+                                queue_status = 3,
+                                rfid_lastdate = now
+                            };
+
+                            string message_insert = RFID.InsertRFIDLog(data_rfid);
+
+
+                            #endregion API
+
+                            #region Allergen
                             //Check Allergen
                             if (rfid.Data[0].Allergen.ToLower().Trim() == "yes")
                             {
                                 //Message Box Custom
-                                TextAllergen("Allergen", "ดัมพ์" + dump, "ทะเบียน " + data_dump.truck_number);
+                                TextAllergen("Allergen", "ดัมพ์ " + dump + " ทะเบียน " + rfid.Data[0].TruckNumber, "พบสารก่อให้เกิดภูมิแพ้");
                             }
-                            //Save data truck 
-                            if (rfid != null)
-                            {
-                                //Update status dump 
-                                DataUpdateModel dataUpdate = await UpdateAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, phase, dump, "ADD");
-                                if (dataUpdate != null)
-                                {
-                                    DateTime now = DateTime.Now;
-                                    //Update Data To Database
-                                    DataModel dataDump = new DataModel();
-                                    dataDump.dump_id = dump;
-                                    dataDump.rfid = data_dump.rfid;
-                                    dataDump.truck_number = rfid.Data[0].TruckNumber;
-                                    dataDump.rfid_lastdate = now;
-                                    dataDump.cane_type = Int32.Parse(rfid.Data[0].CaneType);
-                                    dataDump.allergen = rfid.Data[0].Allergen;
-                                    dataDump.barcode = rfid.Data[0].Barcode;
-                                    dataDump.truck_type = Convert.ToInt32(truck_type);
-                                    dataDump.weight_type = Convert.ToInt32(weight_type);
-                                    dataDump.queue_status = 3;
-                                    string message_update = RFID.UpdateRFID(dataDump);
 
-                                    //Insert Data RFID Log
-
-                                    DataModel data_rfid = new DataModel()
-                                    {
-                                        dump_id = dump,
-                                        area_id = Setting.area_id,
-                                        crop_year = Setting.crop_year,
-                                        allergen = rfid.Data[0].Allergen,
-                                        truck_number = rfid.Data[0].TruckNumber,
-                                        barcode = rfid.Data[0].Barcode,
-                                        cane_type = Int32.Parse(rfid.Data[0].CaneType),
-                                        weight_type = Convert.ToInt32(weight_type),
-                                        truck_type = Convert.ToInt32(truck_type),
-                                        rfid = data_dump.rfid,
-                                        queue_status = 3,
-                                        rfid_lastdate = now
-                                    };
-
-                                    string message_insert = RFID.InsertRFIDLog(data_rfid);
-                                }
-                                else
-                                {
-                                    try
-                                    {
-                                        SoundPlayer dump_wave_file = new SoundPlayer();
-                                        dump_wave_file.SoundLocation = Path.Combine(path, $"voice\\noserver.wav");
-                                        dump_wave_file.PlaySync();
-                                    }
-                                    catch
-                                    {
-
-                                    }
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    SoundPlayer dump_wave_file = new SoundPlayer();
-                                    dump_wave_file.SoundLocation = Path.Combine(path, $"voice\\noscan.wav");
-                                    dump_wave_file.PlaySync();
-                                }
-                                catch
-                                {
-
-                                }
-                            }
-                            #endregion API
-                            // Speaker
-                            //Run(rfid);
+                            #endregion Allergen
                         }
                     }
                 }
@@ -423,116 +399,6 @@ namespace SKTRFIDCOMMON
                 this.Close();
             }
         }
-        private async Task<DataUpdateModel> UpdateAPI(int areaid, string cropyear, string barcode, int phase, int dump, string type)
-        {
-            DataUpdateModel data = new DataUpdateModel();
-            try
-            {
-                HttpClient client = new HttpClient();
-                string url = $"http://10.43.6.33/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
-                //string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
-                HttpResponseMessage response = await client.PostAsync(url, null);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseBody = await response.Content.ReadAsStringAsync();
-                    data = JsonConvert.DeserializeObject<DataUpdateModel>(responseBody);
-                }
-                return data;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-        private async Task<RFIDModel> CallAPI(DataModel data)
-        {
-            RFIDModel rfid = new RFIDModel();
-            try
-            {
-                HttpClient client = new HttpClient();
-                string url = $"http://10.43.6.33/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
-                //string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseBody = await response.Content.ReadAsStringAsync();
-                    rfid = JsonConvert.DeserializeObject<RFIDModel>(responseBody);
-                }
-                return rfid;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-        private async Task<ResultUpdateAlledModel> UpdateAlled(string area_id, string crop_year, string barcode, string alled)
-        {
-            ResultUpdateAlledModel result = new ResultUpdateAlledModel();
-            try
-            {
-                HttpClient client = new HttpClient();
-                string url = $"http://10.43.6.33/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
-                //string url = $"http://thipskt.cristalla.co.th/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
-                HttpResponseMessage response = await client.PutAsync(url, null);
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseBody = await response.Content.ReadAsStringAsync();
-                    result = JsonConvert.DeserializeObject<ResultUpdateAlledModel>(responseBody);
-                }
-                return result;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-        private void Run(RFIDModel rfid)
-        {
-            string path = Directory.GetCurrentDirectory();
-            if (rfid != null)
-            {
-                //for (int j = 0; j < rfid.Data?[0].TruckNumber?.Length; j++)
-                //{
-                //    try
-                //    {
-                //        SoundPlayer my_wave_file = new SoundPlayer();
-                //        my_wave_file.SoundLocation = Path.Combine(path, $"voice\\{rfid.Data?[0].TruckNumber?[j]}.wav");
-                //        my_wave_file.PlaySync();
-                //    }
-                //    catch
-                //    {
-                //        continue;
-                //    }
-                //}
-
-                try
-                {
-                    try
-                    {
-                        SoundPlayer save_wave_file = new SoundPlayer();
-                        save_wave_file.SoundLocation = Path.Combine(path, $"voice\\save.wav");
-                        save_wave_file.PlaySync();
-                    }
-                    catch
-                    {
-
-                    }
-                }
-                catch
-                {
-                    try
-                    {
-                        SoundPlayer my_wave_file = new SoundPlayer();
-                        my_wave_file.SoundLocation = Path.Combine(path, $"voice\\noserver.wav");
-                        my_wave_file.PlaySync();
-                    }
-                    catch
-                    {
-
-                    }
-                }
-            }
-        }
         private static void RefreshReaderListCommandExecute()
         {
             Readers.Clear();
@@ -549,51 +415,57 @@ namespace SKTRFIDCOMMON
                 Console.WriteLine(e.Message);
             }
         }
-
         private DialogResult spawnForm(string title, string text1, string text2)
         {
             newForm.Text = title;
             newForm.Controls.Add(txtMsg);
+            newForm.BackColor = Color.Blue;
             txtMsg.AutoSize = true;
             txtMsg.Text = text1 + Environment.NewLine + text2;
-            newForm.Width = 300;
-            newForm.Height = 240;
-            txtMsg.Location = new Point(newForm.Width / 2 - 130, 15);
-            txtMsg.Font = new Font("Angsana New", 25f);
+            newForm.Width = 500;
+            newForm.Height = 420;
+            txtMsg.Location = new Point(newForm.Width / 2 - 220, 40);
+            txtMsg.Font = new Font("Angsana New", 40f);
             txtMsg.TextAlign = ContentAlignment.MiddleCenter;
+            txtMsg.ForeColor = Color.Black;
 
             newForm.Controls.Add(btnYes);
             btnYes.Text = "มี";
-            btnYes.Width = 100;
-            btnYes.Height = 50;
-            btnYes.Font = new Font("Angsana New", 20f);
-            btnYes.Location = new Point(newForm.Width / 2 - 140, 120);
-            btnYes.Click += BtnYes_Click;
+            btnYes.Width = 150;
+            btnYes.Height = 80;
+            btnYes.Font = new Font("Angsana New", 30f);
             btnYes.BackColor = Color.Red;
+            btnYes.Location = new Point(newForm.Width / 2 - 190, 190);
+            btnYes.Click += BtnYes_Click;
+            btnYes.Cursor = Cursors.Hand;
 
             newForm.Controls.Add(btnNo);
             btnNo.Text = "ไม่มี";
-            btnNo.Width = 100;
-            btnNo.Height = 50;
-            btnNo.Font = new Font("Angsana New", 20f);
-            btnNo.Location = new Point(newForm.Width / 2 + 40, 120);
+            btnNo.Width = 150;
+            btnNo.Height = 80;
+            btnNo.Font = new Font("Angsana New", 30f);
+            btnNo.BackColor = Color.White;
+            btnNo.Location = new Point(newForm.Width / 2 + 40, 190);
             btnNo.Click += BtnNo_Click;
+            btnNo.Cursor = Cursors.Hand;
 
             newForm.Controls.Add(btnOK);
-            btnOK.Text = "ยืนยัน";
-            btnOK.Width = 150;
-            btnOK.Height = 50;
-            btnOK.Font = new Font("Angsana New", 20f);
-            btnOK.Location = new Point(newForm.Width / 2 - 80, 180);
-            //btnOK.DialogResult = DialogResult.OK;
+            btnOK.Text = "ตรวจสอบ";
+            btnOK.Width = 250;
+            btnOK.Height = 100;
+            btnOK.Font = new Font("Angsana New", 40f);
+            btnOK.BackColor = Color.White;
+            btnOK.Location = new Point(newForm.Width / 2 - 120, 300);
             btnOK.Click += BtnOK_Click;
+            btnOK.Cursor = Cursors.Hand;
+
             newForm.StartPosition = FormStartPosition.CenterScreen;
             newForm.MaximizeBox = false;
             newForm.MinimizeBox = false;
             newForm.FormBorderStyle = FormBorderStyle.None;
             newForm.TopMost = true;
-            return newForm.ShowDialog();
 
+            return newForm.ShowDialog();
         }
         public DialogResult TextAllergen(string title, string text1, string text2)
         {
@@ -612,22 +484,41 @@ namespace SKTRFIDCOMMON
             btnYes.BackColor = Color.Red;
             btnNo.BackColor = Color.White;
         }
+
         private async void BtnOK_Click(object sender, EventArgs e)
         {
             DialogResult dialog = MessageBox.Show("ต้องการยืนยันหรือไม่?", "SKT RFID", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
             if (dialog == DialogResult.OK)
             {
-                //Call Form Alert Allergen
-                SettingModel setting = Settings.GetSetting();
-                string alleD = "0";
-                if (statusAllergen == "Yes")
+                //Check Local Internet
+                bool _checkInternet = checkInternet();
+                if (_checkInternet)  // Online Read data from api
                 {
-                    alleD = "1";
-                }
-                await UpdateAlled(setting.area_id.ToString(), setting.crop_year, rfid.Data[0].Barcode, alleD);
-                newForm.Close();
-                btnOK.DialogResult = DialogResult.OK;
+                    //Call Form Alert Allergen
+                    SettingModel setting = Settings.GetSetting();
+                    string alleD = "0";
+                    if (statusAllergen == "Yes")
+                    {
+                        alleD = "1";
+                    }
 
+                    //Update Allergen to API
+                    await API.UpdateAlled(setting.area_id.ToString(), setting.crop_year, rfid.Data[0].Barcode, alleD);
+                }
+
+                // Update Allergen Local Database
+                DataModel data = new DataModel()
+                {
+                    dump_id = dump,
+                    allergen = statusAllergen,
+                    barcode = rfid.Data[0].Barcode,
+                    area_id = Setting.area_id,
+                    crop_year = Setting.crop_year
+                };
+
+                RFID.UpdateRFIDAllergen(data);
+                RFID.UpdateRFIDAllergenLog(data);
+                newForm.Close();
             }
         }
         bool checkInternet()

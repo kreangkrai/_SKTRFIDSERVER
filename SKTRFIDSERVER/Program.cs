@@ -16,7 +16,8 @@ namespace SKTRFIDSERVER
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1(args[0], args[1], args[2]));
+            // Mode , Server , Dump , Phase
+            Application.Run(new Form1(args[0],args[1], args[2], args[3]));
         }
 
         //static void Main() //string [] args
