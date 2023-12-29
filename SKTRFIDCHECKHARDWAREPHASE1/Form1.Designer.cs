@@ -244,7 +244,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.btnPLCCheck1);
             this.groupBox2.Font = new System.Drawing.Font("Angsana New", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(12, 420);
+            this.groupBox2.Location = new System.Drawing.Point(12, 430);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(894, 325);
             this.groupBox2.TabIndex = 1;
@@ -359,7 +359,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(921, 757);
+            this.ClientSize = new System.Drawing.Size(921, 774);
             this.Controls.Add(this.lblPhase);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.groupBox2);
