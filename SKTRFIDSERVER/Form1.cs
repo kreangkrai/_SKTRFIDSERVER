@@ -59,6 +59,7 @@ namespace SKTRFIDSERVER
         string queue_status = string.Empty;
         string dump_no = string.Empty;
 
+        int count_insert_api = 0;
 
         DataModel data_dump = new DataModel();
         public Form1(string _mode ,string _server, string _dump,string _phase)
@@ -95,12 +96,10 @@ namespace SKTRFIDSERVER
                 
                 // PLC
                 cj2 = new CJ2Compolet();
-                cj2.ConnectionType = ConnectionType.UCMM;
-                cj2.HeartBeatTimer = 3000;
+                cj2.ConnectionType = ConnectionType.UCMM;              
                 cj2.UseRoutePath = false;
                 cj2.PeerAddress = Setting.ip_plc;
                 cj2.LocalPort = 2;
-                cj2.OnHeartBeatTimer += Cj2_OnHeartBeatTimer;
                 cj2.Active = true;
 
 
@@ -427,6 +426,10 @@ namespace SKTRFIDSERVER
                         }
 
                         #endregion Allergen
+
+                        // Start timer for send api when dump completed
+                        cj2.HeartBeatTimer = 3000;
+                        cj2.OnHeartBeatTimer += Cj2_OnHeartBeatTimer;
                     }
                     else
                     {
@@ -489,41 +492,58 @@ namespace SKTRFIDSERVER
 
         private async void Cj2_OnHeartBeatTimer(object sender, EventArgs e)
         {
+            /*
+            @STATUS_DB = 0-- มีปัญหาในการเชื่อมต่อ
+            @STATUS_DB = 1-- บันทึกสำเร็จ
+            @STATUS_DB = 2-- Barcode นี้มีอยู่ในระบบแล้ว
+            @STATUS_DB = 3-- ชั่งออกแล้วไม่สามารถแก้ไขการดัมพ์ได้
+            @STATUS_DB = 4-- Barcode นี้มีอยู่ในระบบแล้ว(ชั่งรวม)
 
+            */
             // Wait call tigger dump
 
-
             #region API AND Database
-            string path = Directory.GetCurrentDirectory();
-            //Check Local Internet
-            if (CheckInternet)  // Online Read data from api
-            {
-                //Insert Data to API
-                DataUpdateModel dataInsert = await API.InsertDataAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, phase, dump, "ADD");
-            }
-            else // Offline Read data from rfid card
-            {
-                try
-                {
-                    SoundPlayer dump_wave_file = new SoundPlayer();
-                    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\d{dump}.wav");
-                    dump_wave_file.PlaySync();
-                }
-                catch
-                {
 
-                }
-                try
+            while (count_insert_api < 3)
+            {
+                bool CheckInternet = checkInternet();
+                //Check Local Internet
+                if (CheckInternet)  // Online Read data from api
                 {
-                    SoundPlayer dump_wave_file = new SoundPlayer();
-                    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\noserver.wav");
-                    dump_wave_file.PlaySync();
+                    //Insert Data to API
+                    DataUpdateModel dataInsert = await API.InsertDataAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, phase, dump, "ADD");
+                    if (dataInsert.Data[0].StatusDb != 0) // Send Complete
+                    {
+                        break;
+                    }
                 }
-                catch
+                else
                 {
+                    string path = Directory.GetCurrentDirectory();
+                    try
+                    {
+                        SoundPlayer dump_wave_file = new SoundPlayer();
+                        dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\d{dump}.wav");
+                        dump_wave_file.PlaySync();
+                    }
+                    catch
+                    {
 
+                    }
+                    try
+                    {
+                        SoundPlayer dump_wave_file = new SoundPlayer();
+                        dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\noserver.wav");
+                        dump_wave_file.PlaySync();
+                    }
+                    catch
+                    {
+
+                    }
                 }
+                count_insert_api++;
             }
+
 
             DateTime now = DateTime.Now;
 
@@ -569,7 +589,7 @@ namespace SKTRFIDSERVER
 
             //Completed 
 
-            Application.Exit();
+            Application.Exit();          
         }
 
         private static void RefreshReaderListCommandExecute()
