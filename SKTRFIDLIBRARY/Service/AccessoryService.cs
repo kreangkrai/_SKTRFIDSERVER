@@ -12,8 +12,8 @@ namespace SKTRFIDLIBRARY.Service
     {
         public string decodeLicensePlate(string code)
         {
-            int ascii_char_license1 = Int32.Parse(code.Substring(0, 2));
-            int ascii_char_license2 = Int32.Parse(code.Substring(2, 2));
+            int ascii_char_license1 = Int32.Parse(code.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+            int ascii_char_license2 = Int32.Parse(code.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
             byte[] charLicense = new byte[2];
             charLicense[0] = (byte)ascii_char_license1;
             charLicense[1] = (byte)ascii_char_license2;

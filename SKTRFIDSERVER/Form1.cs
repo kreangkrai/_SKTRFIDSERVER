@@ -98,7 +98,7 @@ namespace SKTRFIDSERVER
                 cj2 = new CJ2Compolet();
                 cj2.ConnectionType = ConnectionType.UCMM;              
                 cj2.UseRoutePath = false;
-                cj2.PeerAddress = Setting.ip_plc;
+                cj2.PeerAddress = Setting.ip_plc_common;
                 cj2.LocalPort = 2;
                 cj2.Active = true;
 
@@ -182,66 +182,21 @@ namespace SKTRFIDSERVER
                         #region SCAN TAG
 
                         bool status_scan = false;
-                                           
+
 
                         while (!status_scan)
                         {
-                            SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
-                            var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1, 1);
-                            if (tuple.Item1.Status == "SUCCESS")
-                            {                             
-                                tag_id = tuple.Item1.Tags[0].IdentiferString;
-                                SelectedTag = tuple.Item1.Tags[0];
-                                
-                                string _rfid = tag_id.Substring(0, 4); // RFID
-                                if (_rfid == "0000") // Check Invalid RFID
+                            try
+                            {
+                                SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
+                                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1000, 1);
+                                if (tuple.Item1.Status == "SUCCESS")
                                 {
-                                    try
-                                    {
-                                        SoundPlayer dump_wave_file = new SoundPlayer();
-                                        dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\d{dump}.wav");
-                                        dump_wave_file.PlaySync();
-                                    }
-                                    catch
-                                    {
+                                    tag_id = tuple.Item1.Tags[0].IdentiferString;
+                                    SelectedTag = tuple.Item1.Tags[0];
 
-                                    }
-                                    try
-                                    {
-                                        SoundPlayer dump_wave_file = new SoundPlayer();
-                                        dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\nowrite.wav");
-                                        dump_wave_file.PlaySync();
-                                    }
-                                    catch
-                                    {
-
-                                    }
-                                    return;
-                                }
-                                else // Valid RFID
-                                {                                   
-                                    if (tag_id.Length == 24) // Check Valid RFID Card  24 Charector
-                                    {
-                                        // Insert Data Log RFID Original
-                                        string rfid_ = int.Parse(tag_id.Substring(0, 4), System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
-                                        TagLogModel taglog = new TagLogModel()
-                                        {
-                                            tag = tag_id,
-                                            tag_date = DateTime.Now,
-                                            rfid = rfid_
-                                        };
-                                        string message = TagLog.InsertTag(taglog);
-
-                                        rfid_code = tag_id.Substring(0, 4);
-                                        license_plate = tag_id.Substring(4, 10);
-                                        truck_type = tag_id.Substring(14, 1);
-                                        weight_code = tag_id.Substring(15, 5);
-                                        cane_type = tag_id.Substring(20, 1);
-                                        weight_type = tag_id.Substring(21, 1);
-                                        queue_status = tag_id.Substring(22, 1);
-                                        dump_no = tag_id.Substring(23, 1);
-                                    }
-                                    else
+                                    string _rfid = tag_id.Substring(0, 4); // RFID
+                                    if (_rfid == "0000") // Check Invalid RFID
                                     {
                                         try
                                         {
@@ -256,7 +211,7 @@ namespace SKTRFIDSERVER
                                         try
                                         {
                                             SoundPlayer dump_wave_file = new SoundPlayer();
-                                            dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\noscan.wav");
+                                            dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\nowrite.wav");
                                             dump_wave_file.PlaySync();
                                         }
                                         catch
@@ -265,144 +220,201 @@ namespace SKTRFIDSERVER
                                         }
                                         return;
                                     }
-
-                                    data_dump = new DataModel();
-                                    data_dump.dump_id = dump;
-                                    data_dump.area_id = Setting.area_id;
-                                    data_dump.crop_year = Setting.crop_year;
-                                    data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
-
-                                    CheckInternet = checkInternet();
-                                    if (CheckInternet)  // Online Read data from api
+                                    else // Valid RFID
                                     {
-                                        // Call Data From API
-                                        rfid = await API.CallAPI(data_dump);
-                                        if (rfid.Data[0].Barcode != "1") // Check Valid Barcode
+                                        if (tag_id.Length == 24) // Check Valid RFID Card  24 Charector
                                         {
-                                            //Update Value from API
-                                            weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
-                                            cane_type = rfid.Data[0].CaneType;
+                                            // Insert Data Log RFID Original
+                                            string rfid_ = int.Parse(tag_id.Substring(0, 4), System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
+                                            TagLogModel taglog = new TagLogModel()
+                                            {
+                                                tag = tag_id,
+                                                tag_date = DateTime.Now,
+                                                rfid = rfid_
+                                            };
+                                            string message = TagLog.InsertTag(taglog);
+
+                                            rfid_code = tag_id.Substring(0, 4);
+                                            license_plate = tag_id.Substring(4, 10);
+                                            truck_type = tag_id.Substring(14, 1);
+                                            weight_code = tag_id.Substring(15, 5);
+                                            cane_type = tag_id.Substring(20, 1);
+                                            weight_type = tag_id.Substring(21, 1);
+                                            queue_status = tag_id.Substring(22, 1);
+                                            dump_no = tag_id.Substring(23, 1);
                                         }
-                                    }
-                                    else // Offline Read From RFID Card
-                                    {
-                                        rfid = Accessory.ReadRFIDCard(tag_id);
-                                    }
-
-                                    //Update Tag Queue,Dump
-                                    queue_status = "3";  // เข้าชั่งแล้ว
-                                    dump_no = dump.ToString("x").ToUpper(); // Dump 
-
-                                    var tag_stringBuilder = new StringBuilder(tag_id);
-                                    tag_stringBuilder.Remove(22, 1);
-                                    tag_stringBuilder.Insert(22, queue_status);
-                                    tag_stringBuilder.Remove(23, 1);
-                                    tag_stringBuilder.Insert(23, dump_no);
-                                    tag_id = tag_stringBuilder.ToString();
-                                }
-                                status_scan = true;
-                            }
-                        }
-
-                        #endregion SCAN TAG
-
-
-                        #region WRITE TAG
-
-                        //Write Tag
-                        bool status_write = false;
-
-                        while (status_write == false)
-                        {
-                            try
-                            {                              
-                                string data_write = tag_id;
-                                byte[] data = Enumerable.Range(0, 12 * 2)
-                                                .Where(x => x % 2 == 0)
-                                                .Select(x => Convert.ToByte(data_write.Substring(x, 2), 16))
-                                                .ToArray();
-
-                                var result_write = await OpcUaService.Instance.WriteTagAsync(SelectedReader, SelectedTag, 0, data);
-                                Thread.Sleep(3000);
-                                if (result_write.Item2.IsGood)
-                                {
-                                    //Re - Check Write
-                                    if (readers != null)
-                                    {
-                                        SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
-                                        var tuple1 = await OpcUaService.Instance.ScanAsync(SelectedReader, 1, 1);
-                                        if (tuple1.Item1.Status == "SUCCESS")
+                                        else
                                         {
-                                            //tag_id = tuple1.Item1.Tags[0].IdentiferString;
-                                            SelectedTag = tuple1.Item1.Tags[0];
-
-                                            string _read_tag = "";
                                             try
                                             {
-                                                var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
-                                                if (result_read.Item2.IsGood)
+                                                SoundPlayer dump_wave_file = new SoundPlayer();
+                                                dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\d{dump}.wav");
+                                                dump_wave_file.PlaySync();
+                                            }
+                                            catch
+                                            {
+
+                                            }
+                                            try
+                                            {
+                                                SoundPlayer dump_wave_file = new SoundPlayer();
+                                                dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\noscan.wav");
+                                                dump_wave_file.PlaySync();
+                                            }
+                                            catch
+                                            {
+
+                                            }
+                                            return;
+                                        }
+
+                                        data_dump = new DataModel();
+                                        data_dump.dump_id = dump;
+                                        data_dump.area_id = Setting.area_id;
+                                        data_dump.crop_year = Setting.crop_year;
+                                        data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
+
+                                        CheckInternet = checkInternet();
+                                        if (CheckInternet)  // Online Read data from api
+                                        {
+                                            // Call Data From API
+                                            rfid = await API.CallAPI(data_dump);
+                                            if (rfid.Data[0].Barcode != "1") // Check Valid Barcode
+                                            {
+                                                //Update Value from API
+                                                weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
+                                                cane_type = rfid.Data[0].CaneType;
+                                            }
+                                        }
+                                        else // Offline Read From RFID Card
+                                        {
+                                            rfid = Accessory.ReadRFIDCard(tag_id);
+                                        }
+
+                                        //Update Tag Queue,Dump
+                                        //queue_status = "3";  // เข้าชั่งแล้ว
+                                        //dump_no = dump.ToString("x").ToUpper(); // Dump
+                                        //queue_status = "9";  // เข้าชั่งแล้ว
+                                        //dump_no = "9";
+                                        //dump_no = dump.ToString("x").ToUpper(); // Dump 
+
+                                        var tag_stringBuilder = new StringBuilder(tag_id);
+                                        tag_stringBuilder.Remove(22, 1);
+                                        tag_stringBuilder.Insert(22, queue_status);
+                                        tag_stringBuilder.Remove(23, 1);
+                                        tag_stringBuilder.Insert(23, dump_no);
+                                        tag_id = tag_stringBuilder.ToString();
+                                    }
+
+                                    Thread.Sleep(1000);
+                                    //MessageBox.Show("Scan Success ", tag_id);
+
+
+
+                                    #endregion SCAN TAG
+
+
+                                    #region WRITE TAG
+
+
+
+
+
+                                    //string data_write = tag_id;
+                                    string data_write = "3" + dump.ToString("x").ToUpper();
+                                    byte[] data = Enumerable.Range(0, 1 * 2)
+                                                    .Where(x => x % 2 == 0)
+                                                    .Select(x => Convert.ToByte(data_write.Substring(x, 2), 16))
+                                                    .ToArray();
+                                    OpcUaStatusCode status_code;
+                                    //Thread.Sleep(3000);
+                                    var result_write = OpcUaService.Instance.WriteTag(SelectedReader, SelectedTag, 11, data, out status_code);
+                                    Thread.Sleep(100);
+                                    if (status_code.IsGood)
+                                    //if (result_write.Item2.IsGood)
+                                    {
+
+                                        //Re - Check Write
+                                        if (readers != null)
+                                        {
+                                            SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
+                                            var tuple1 = await OpcUaService.Instance.ScanAsync(SelectedReader, 1000, 1);
+                                            if (tuple1.Item1.Status == "SUCCESS")
+                                            {
+                                                //tag_id = tuple1.Item1.Tags[0].IdentiferString;
+                                                SelectedTag = tuple1.Item1.Tags[0];
+
+                                                string _read_tag = "";
+                                                try
                                                 {
-                                                    _read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
-                                                    if (_read_tag.Contains(data_write))
-                                                    {                                                      
-                                                        // Send Data To PLC
-                                                        if (phase == 1)
+                                                    var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
+                                                    if (result_read.Item2.IsGood)
+                                                    {
+                                                        _read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
+                                                        if (_read_tag.Contains(data_write))
                                                         {
-                                                            string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
+
+                                                            // Send Data To PLC
+                                                            if (phase == 1)
+                                                            {
+                                                                string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
                                                                                                                 "TY_BF_D2" ,
                                                                                                                 "TY_BF_D3" ,
                                                                                                                 "TY_BF_D4" ,
                                                                                                                 "TY_BF_D5" ,
                                                                                                                 "TY_BF_D6" ,
                                                                                                                 "TY_BF_D7" };
-                                                            string _caneType = "0"; // สด
-                                                            if (cane_type == "1" || cane_type == "3") // ไฟไหม้
-                                                            {
-                                                                _caneType = "1";
-                                                            }
-                                                            cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
+                                                                string _caneType = "0"; // สด
+                                                                if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                                                {
+                                                                    _caneType = "1";
+                                                                }
+                                                                cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
 
-                                                            string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
+                                                                string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
                                                                                                                 "Bar_ID2" ,
                                                                                                                 "Bar_ID3" ,
                                                                                                                 "Bar_ID4" ,
                                                                                                                 "Bar_ID5" ,
                                                                                                                 "Bar_ID6" ,
                                                                                                                 "Bar_ID7" };
-                                                            cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
-                                                        }
+                                                                cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                                            }
 
-                                                        if (phase == 2)
-                                                        {
-                                                            string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
+                                                            if (phase == 2)
+                                                            {
+                                                                string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
                                                                                                                     "TY_BF_D2" ,
                                                                                                                     "TY_BF_D3" ,
                                                                                                                     "TY_BF_D4" ,
                                                                                                                     "TY_BF_D5" ,
                                                                                                                     "TY_BF_D6" ,
                                                                                                                     "TY_BF_D7" };
-                                                            string _caneType = "0"; // สด
-                                                            if (cane_type == "1" || cane_type == "3") // ไฟไหม้
-                                                            {
-                                                                _caneType = "1";
-                                                            }
-                                                            cj2.WriteVariable(dump_plc_caneType[dump - (1 + 7)], _caneType);
+                                                                string _caneType = "0"; // สด
+                                                                if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                                                {
+                                                                    _caneType = "1";
+                                                                }
+                                                                cj2.WriteVariable(dump_plc_caneType[dump - (1 + 7)], _caneType);
 
-                                                            string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
+                                                                string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
                                                                                                                 "Bar_ID2" ,
                                                                                                                 "Bar_ID3" ,
                                                                                                                 "Bar_ID4" ,
                                                                                                                 "Bar_ID5" ,
                                                                                                                 "Bar_ID6" ,
                                                                                                                 "Bar_ID7" };
-                                                            cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                                                cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                                            }
+                                                            status_scan = true;
+                                                            //status_write = true;
+                                                            //MessageBox.Show("Write Success ", data_write);
                                                         }
-                                                        status_write = true;
                                                     }
                                                 }
-                                            }
-                                            catch
-                                            {
+                                                catch
+                                                {
+                                                }
                                             }
                                         }
                                     }
@@ -413,13 +425,14 @@ namespace SKTRFIDSERVER
 
                             }
                         }
+
                         #endregion WRITE TAG
 
 
-                        #region Allergen
+                            #region Allergen
 
-                        //Check Allergen
-                        if (rfid.Data[0].Allergen.ToLower().Trim() == "yes")
+                            //Check Allergen
+                            if (rfid.Data[0].Allergen.ToLower().Trim() == "yes")
                         {
                             //Message Box Custom
                             TextAllergen("Allergen", "ดัมพ์ " + dump + " ทะเบียน " + rfid.Data[0].TruckNumber, "พบสารก่อให้เกิดภูมิแพ้");
@@ -458,27 +471,27 @@ namespace SKTRFIDSERVER
             }
             catch (OpcUaServiceException ex)
             {
-                string path = Directory.GetCurrentDirectory();
-                try
-                {
-                    SoundPlayer dump_wave_file = new SoundPlayer();
-                    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\d{dump}.wav");
-                    dump_wave_file.PlaySync();
-                }
-                catch
-                {
+                //string path = Directory.GetCurrentDirectory();
+                //try
+                //{
+                //    SoundPlayer dump_wave_file = new SoundPlayer();
+                //    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\d{dump}.wav");
+                //    dump_wave_file.PlaySync();
+                //}
+                //catch
+                //{
 
-                }
-                try
-                {                   
-                    SoundPlayer dump_wave_file = new SoundPlayer();
-                    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\noscan.wav");
-                    dump_wave_file.PlaySync();
-                }
-                catch
-                {
+                //}
+                //try
+                //{                   
+                //    SoundPlayer dump_wave_file = new SoundPlayer();
+                //    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\noscan.wav");
+                //    dump_wave_file.PlaySync();
+                //}
+                //catch
+                //{
 
-                }
+                //}
 
                 string loca = @"D:\log.txt";
                 File.AppendAllText(loca, server + " " + dump + " " + DateTime.Now + " " + ex.Message + Environment.NewLine);
@@ -486,10 +499,8 @@ namespace SKTRFIDSERVER
             finally
             {
                 OpcUaService.Instance.Disconnect();
-                this.Close();
             }
         }
-
         private async void Cj2_OnHeartBeatTimer(object sender, EventArgs e)
         {
             /*
@@ -556,7 +567,7 @@ namespace SKTRFIDSERVER
             dataDump.truck_number = rfid.Data[0].TruckNumber;
             dataDump.farmer_name = rfid.Data[0].FarmerName;
             dataDump.rfid_lastdate = now;
-            dataDump.cane_type = Int32.Parse(rfid.Data[0].CaneType);
+            dataDump.cane_type = Convert.ToInt32(rfid.Data[0].CaneType);
             dataDump.allergen = rfid.Data[0].Allergen;
             dataDump.barcode = rfid.Data[0].Barcode;
             dataDump.truck_type = Convert.ToInt32(truck_type);
@@ -575,7 +586,7 @@ namespace SKTRFIDSERVER
                 truck_number = rfid.Data[0].TruckNumber,
                 farmer_name = rfid.Data[0].FarmerName,
                 barcode = rfid.Data[0].Barcode,
-                cane_type = Int32.Parse(rfid.Data[0].CaneType),
+                cane_type = Convert.ToInt32(rfid.Data[0].CaneType),
                 weight_type = Convert.ToInt32(weight_type),
                 truck_type = Convert.ToInt32(truck_type),
                 rfid = data_dump.rfid,
@@ -589,7 +600,7 @@ namespace SKTRFIDSERVER
 
             //Completed 
 
-            Application.Exit();          
+            this.Close();         
         }
 
         private static void RefreshReaderListCommandExecute()

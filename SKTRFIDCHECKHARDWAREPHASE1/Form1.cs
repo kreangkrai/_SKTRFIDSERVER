@@ -40,6 +40,8 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             cj2.LocalPort = 2;
             cj2.Active = true;
 
+            //cj2.WriteVariable("Bar_ID1", "107191");
+
             lblPLCIP1.Text = setting.ip_plc;
             try
             {
@@ -49,12 +51,14 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             catch
             {
                 btnPLC1.BackColor = Color.Red;
-            }
+                }
 
-        }
+            }
 
         private void btnPLCCheck2_Click(object sender, EventArgs e)
         {
+
+
             cj1 = new CJ2Compolet();
             cj1.ConnectionType = ConnectionType.UCMM;
             cj1.UseRoutePath = false;
@@ -62,6 +66,8 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             cj1.LocalPort = 2;
             cj1.Active = true;
 
+
+            //cj1.WriteVariable("Bar_ID1", "123456");
             lblPLCIP2.Text = setting.ip_plc_common;
             try
             {
@@ -71,8 +77,8 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             catch
             {
                 btnPLC2.BackColor = Color.Red;
+                }
             }
-        }
 
         private async void btnRFIDCheck1_Click(object sender, EventArgs e)
         {
