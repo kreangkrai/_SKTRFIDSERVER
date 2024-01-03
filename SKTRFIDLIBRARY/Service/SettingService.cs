@@ -32,7 +32,7 @@ namespace SKTRFIDLIBRARY.Service
             {
                 using (SqlConnection cn = new SqlConnection(connectionString))
                 {
-                    SqlCommand cmd = new SqlCommand($@"SELECT no,area_id,crop_year,ip1,ip2,ip_plc,ip_plc_common FROM tb_setting", cn);
+                    SqlCommand cmd = new SqlCommand($@"SELECT no,area_id,crop_year,ip1,ip2,ip_plc FROM tb_setting", cn);
                     if (cn.State == ConnectionState.Closed)
                     {
                         cn.Open();
@@ -48,7 +48,6 @@ namespace SKTRFIDLIBRARY.Service
                             setting.ip1 = dr["ip1"].ToString();
                             setting.ip2 = dr["ip2"].ToString();
                             setting.ip_plc = dr["ip_plc"].ToString();
-                            setting.ip_plc_common = dr["ip_plc_common"].ToString();
                         }
                     }
                     dr.Close();

@@ -14,6 +14,5 @@ namespace SKTRFIDLIBRARY.Model
         public string ip1 { get; set; }
         public string ip2 { get; set; }
         public string ip_plc { get; set; }
-        public string ip_plc_common { get; set; }
     }
 }

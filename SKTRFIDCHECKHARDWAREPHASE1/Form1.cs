@@ -19,7 +19,6 @@ namespace SKTRFIDCHECKHARDWAREPHASE
     public partial class Form1 : Form
     {
         CJ2Compolet cj2;
-        CJ2Compolet cj1;
         
         private ISetting Setting;
         SettingModel setting;
@@ -55,31 +54,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
 
             }
 
-        private void btnPLCCheck2_Click(object sender, EventArgs e)
-        {
-
-
-            cj1 = new CJ2Compolet();
-            cj1.ConnectionType = ConnectionType.UCMM;
-            cj1.UseRoutePath = false;
-            cj1.PeerAddress = setting.ip_plc_common;
-            cj1.LocalPort = 2;
-            cj1.Active = true;
-
-
-            //cj1.WriteVariable("Bar_ID1", "123456");
-            lblPLCIP2.Text = setting.ip_plc_common;
-            try
-            {
-                bool manual_d1 = (bool)cj1.ReadVariable("MN_SCAN_D1");
-                btnPLC2.BackColor = Color.YellowGreen;
-            }
-            catch
-            {
-                btnPLC2.BackColor = Color.Red;
-                }
-            }
-
+        
         private async void btnRFIDCheck1_Click(object sender, EventArgs e)
         {
             List<Reader> Readers = new List<Reader>();

@@ -61,6 +61,9 @@ namespace SKTRFIDSERVER
 
         int count_insert_api = 0;
 
+        bool check_tag_original = true;
+
+        string queue_trig = string.Empty;
         DataModel data_dump = new DataModel();
         public Form1(string _mode ,string _server, string _dump,string _phase)
         {
@@ -98,7 +101,7 @@ namespace SKTRFIDSERVER
                 cj2 = new CJ2Compolet();
                 cj2.ConnectionType = ConnectionType.UCMM;              
                 cj2.UseRoutePath = false;
-                cj2.PeerAddress = Setting.ip_plc_common;
+                cj2.PeerAddress = Setting.ip_plc;
                 cj2.LocalPort = 2;
                 cj2.Active = true;
 
@@ -192,8 +195,13 @@ namespace SKTRFIDSERVER
                                 var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1000, 1);
                                 if (tuple.Item1.Status == "SUCCESS")
                                 {
-                                    tag_id = tuple.Item1.Tags[0].IdentiferString;
-                                    SelectedTag = tuple.Item1.Tags[0];
+                                    if (check_tag_original)
+                                    {
+                                        tag_id = tuple.Item1.Tags[0].IdentiferString;
+                                        SelectedTag = tuple.Item1.Tags[0];
+
+                                        check_tag_original = false;
+                                    }
 
                                     string _rfid = tag_id.Substring(0, 4); // RFID
                                     if (_rfid == "0000") // Check Invalid RFID
@@ -290,34 +298,14 @@ namespace SKTRFIDSERVER
                                         {
                                             rfid = Accessory.ReadRFIDCard(tag_id);
                                         }
-
-                                        //Update Tag Queue,Dump
-                                        //queue_status = "3";  // เข้าชั่งแล้ว
-                                        //dump_no = dump.ToString("x").ToUpper(); // Dump
-                                        //queue_status = "9";  // เข้าชั่งแล้ว
-                                        //dump_no = "9";
-                                        //dump_no = dump.ToString("x").ToUpper(); // Dump 
-
-                                        var tag_stringBuilder = new StringBuilder(tag_id);
-                                        tag_stringBuilder.Remove(22, 1);
-                                        tag_stringBuilder.Insert(22, queue_status);
-                                        tag_stringBuilder.Remove(23, 1);
-                                        tag_stringBuilder.Insert(23, dump_no);
-                                        tag_id = tag_stringBuilder.ToString();
                                     }
 
                                     Thread.Sleep(1000);
-                                    //MessageBox.Show("Scan Success ", tag_id);
-
-
 
                                     #endregion SCAN TAG
 
 
                                     #region WRITE TAG
-
-
-
 
 
                                     //string data_write = tag_id;
@@ -327,13 +315,18 @@ namespace SKTRFIDSERVER
                                                     .Select(x => Convert.ToByte(data_write.Substring(x, 2), 16))
                                                     .ToArray();
                                     OpcUaStatusCode status_code;
-                                    //Thread.Sleep(3000);
+
+                                    var tag_stringBuilder = new StringBuilder(tag_id);
+                                    tag_stringBuilder.Remove(22, 1);
+                                    tag_stringBuilder.Insert(22, "3");
+                                    tag_stringBuilder.Remove(23, 1);
+                                    tag_stringBuilder.Insert(23, dump.ToString("x").ToUpper());
+                                    tag_id = tag_stringBuilder.ToString();
+
                                     var result_write = OpcUaService.Instance.WriteTag(SelectedReader, SelectedTag, 11, data, out status_code);
                                     Thread.Sleep(100);
                                     if (status_code.IsGood)
-                                    //if (result_write.Item2.IsGood)
                                     {
-
                                         //Re - Check Write
                                         if (readers != null)
                                         {
@@ -351,9 +344,8 @@ namespace SKTRFIDSERVER
                                                     if (result_read.Item2.IsGood)
                                                     {
                                                         _read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
-                                                        if (_read_tag.Contains(data_write))
+                                                        if (_read_tag.Contains(tag_id))
                                                         {
-
                                                             // Send Data To PLC
                                                             if (phase == 1)
                                                             {
@@ -428,21 +420,36 @@ namespace SKTRFIDSERVER
 
                         #endregion WRITE TAG
 
+                        DateTime now = DateTime.Now;
 
-                            #region Allergen
+                        //Update Data to Local Database
+                        DataModel dataDump = new DataModel();
+                        dataDump.dump_id = dump;
+                        dataDump.area_id = Setting.area_id;
+                        dataDump.crop_year = Setting.crop_year;
+                        dataDump.rfid = data_dump.rfid;
+                        dataDump.truck_number = rfid.Data[0].TruckNumber;
+                        dataDump.farmer_name = rfid.Data[0].FarmerName;
+                        dataDump.rfid_lastdate = now;
+                        dataDump.cane_type = Convert.ToInt32(rfid.Data[0].CaneType);
+                        dataDump.allergen = rfid.Data[0].Allergen;
+                        dataDump.barcode = rfid.Data[0].Barcode;
+                        dataDump.truck_type = Convert.ToInt32(truck_type);
+                        dataDump.weight_type = Convert.ToInt32(weight_type);
+                        dataDump.queue_status = 3;
+                        string message_update = RFID.UpdateRFID(dataDump);
 
-                            //Check Allergen
-                            if (rfid.Data[0].Allergen.ToLower().Trim() == "yes")
+                        #region Allergen
+
+                        //Check Allergen
+                        if (rfid.Data[0].Allergen.ToLower().Trim() == "yes")
                         {
                             //Message Box Custom
                             TextAllergen("Allergen", "ดัมพ์ " + dump + " ทะเบียน " + rfid.Data[0].TruckNumber, "พบสารก่อให้เกิดภูมิแพ้");
                         }
 
                         #endregion Allergen
-
-                        // Start timer for send api when dump completed
-                        cj2.HeartBeatTimer = 3000;
-                        cj2.OnHeartBeatTimer += Cj2_OnHeartBeatTimer;
+     
                     }
                     else
                     {
@@ -471,27 +478,27 @@ namespace SKTRFIDSERVER
             }
             catch (OpcUaServiceException ex)
             {
-                //string path = Directory.GetCurrentDirectory();
-                //try
-                //{
-                //    SoundPlayer dump_wave_file = new SoundPlayer();
-                //    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\d{dump}.wav");
-                //    dump_wave_file.PlaySync();
-                //}
-                //catch
-                //{
+                string path = Directory.GetCurrentDirectory();
+                try
+                {
+                    SoundPlayer dump_wave_file = new SoundPlayer();
+                    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\d{dump}.wav");
+                    dump_wave_file.PlaySync();
+                }
+                catch
+                {
 
-                //}
-                //try
-                //{                   
-                //    SoundPlayer dump_wave_file = new SoundPlayer();
-                //    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\noscan.wav");
-                //    dump_wave_file.PlaySync();
-                //}
-                //catch
-                //{
+                }
+                try
+                {
+                    SoundPlayer dump_wave_file = new SoundPlayer();
+                    dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\noscan.wav");
+                    dump_wave_file.PlaySync();
+                }
+                catch
+                {
 
-                //}
+                }
 
                 string loca = @"D:\log.txt";
                 File.AppendAllText(loca, server + " " + dump + " " + DateTime.Now + " " + ex.Message + Environment.NewLine);
@@ -499,110 +506,10 @@ namespace SKTRFIDSERVER
             finally
             {
                 OpcUaService.Instance.Disconnect();
+                this.Close();
             }
         }
-        private async void Cj2_OnHeartBeatTimer(object sender, EventArgs e)
-        {
-            /*
-            @STATUS_DB = 0-- มีปัญหาในการเชื่อมต่อ
-            @STATUS_DB = 1-- บันทึกสำเร็จ
-            @STATUS_DB = 2-- Barcode นี้มีอยู่ในระบบแล้ว
-            @STATUS_DB = 3-- ชั่งออกแล้วไม่สามารถแก้ไขการดัมพ์ได้
-            @STATUS_DB = 4-- Barcode นี้มีอยู่ในระบบแล้ว(ชั่งรวม)
-
-            */
-            // Wait call tigger dump
-
-            #region API AND Database
-
-            while (count_insert_api < 3)
-            {
-                bool CheckInternet = checkInternet();
-                //Check Local Internet
-                if (CheckInternet)  // Online Read data from api
-                {
-                    //Insert Data to API
-                    DataUpdateModel dataInsert = await API.InsertDataAPI(Setting.area_id, Setting.crop_year, rfid.Data[0].Barcode, phase, dump, "ADD");
-                    if (dataInsert.Data[0].StatusDb != 0) // Send Complete
-                    {
-                        break;
-                    }
-                }
-                else
-                {
-                    string path = Directory.GetCurrentDirectory();
-                    try
-                    {
-                        SoundPlayer dump_wave_file = new SoundPlayer();
-                        dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\d{dump}.wav");
-                        dump_wave_file.PlaySync();
-                    }
-                    catch
-                    {
-
-                    }
-                    try
-                    {
-                        SoundPlayer dump_wave_file = new SoundPlayer();
-                        dump_wave_file.SoundLocation = Path.Combine(path, $"VOICE_DUMP\\noserver.wav");
-                        dump_wave_file.PlaySync();
-                    }
-                    catch
-                    {
-
-                    }
-                }
-                count_insert_api++;
-            }
-
-
-            DateTime now = DateTime.Now;
-
-            //Update Data to Local Database
-            DataModel dataDump = new DataModel();
-            dataDump.dump_id = dump;
-            dataDump.area_id = Setting.area_id;
-            dataDump.crop_year = Setting.crop_year;
-            dataDump.rfid = data_dump.rfid;
-            dataDump.truck_number = rfid.Data[0].TruckNumber;
-            dataDump.farmer_name = rfid.Data[0].FarmerName;
-            dataDump.rfid_lastdate = now;
-            dataDump.cane_type = Convert.ToInt32(rfid.Data[0].CaneType);
-            dataDump.allergen = rfid.Data[0].Allergen;
-            dataDump.barcode = rfid.Data[0].Barcode;
-            dataDump.truck_type = Convert.ToInt32(truck_type);
-            dataDump.weight_type = Convert.ToInt32(weight_type);
-            dataDump.queue_status = 3;
-            string message_update = RFID.UpdateRFID(dataDump);
-
-            //Insert Data RFID Log
-
-            DataModel data_rfid = new DataModel()
-            {
-                dump_id = dump,
-                area_id = Setting.area_id,
-                crop_year = Setting.crop_year,
-                allergen = rfid.Data[0].Allergen,
-                truck_number = rfid.Data[0].TruckNumber,
-                farmer_name = rfid.Data[0].FarmerName,
-                barcode = rfid.Data[0].Barcode,
-                cane_type = Convert.ToInt32(rfid.Data[0].CaneType),
-                weight_type = Convert.ToInt32(weight_type),
-                truck_type = Convert.ToInt32(truck_type),
-                rfid = data_dump.rfid,
-                queue_status = 3,
-                rfid_lastdate = now
-            };
-
-            string message_insert = RFID.InsertRFIDLog(data_rfid);
-
-            #endregion API AND Database
-
-            //Completed 
-
-            this.Close();         
-        }
-
+           
         private static void RefreshReaderListCommandExecute()
         {
             Readers.Clear();

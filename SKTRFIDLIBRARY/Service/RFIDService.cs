@@ -33,8 +33,8 @@ namespace SKTRFIDLIBRARY.Service
                         cn.Open();
                     }
 
-                    SqlCommand cmd = new SqlCommand($@"INSERT INTO tb_rfid_log VALUES('{data.dump_id}','{data.area_id}',
-                                                                                      '{data.crop_year}','{data.rfid}','{data.barcode}',
+                    SqlCommand cmd = new SqlCommand($@"INSERT INTO tb_rfid_log VALUES('{data.queue1}','{data.dump_id}','{data.area_id}',
+                                                                                      '{data.crop_year}','{data.rfid}','{data.barcode}',N'{data.farmer_name}',
                                                                                       '{data.cane_type}','{data.allergen}',N'{data.truck_number}',
                                                                                       '{data.truck_type}','{data.weight_type}','{data.queue_status}','{data.rfid_lastdate}')", cn);
                     cmd.ExecuteNonQuery();
@@ -49,6 +49,7 @@ namespace SKTRFIDLIBRARY.Service
 
         public string UpdateRFID(DataModel data)
         {
+                     
             try
             {
                 using (SqlConnection cn = new SqlConnection(connectionString))
@@ -57,9 +58,9 @@ namespace SKTRFIDLIBRARY.Service
                     {
                         cn.Open();
                     }
-
                     SqlCommand cmd = new SqlCommand($@"UPDATE tb_rfid SET rfid=N'{data.rfid}',
                                                                           barcode=N'{data.barcode}',
+                                                                          farmer_name=N'{data.farmer_name}',
                                                                           cane_type='{data.cane_type}',
                                                                           allergen='{data.allergen}',
                                                                           truck_number=N'{data.truck_number}', 

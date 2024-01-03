@@ -16,7 +16,7 @@ namespace SKTRFIDSERVER
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            // Mode , Server , Dump , Phase
+            //Mode , Server , Dump , Phase
             Application.Run(new Form1(args[0], args[1], args[2], args[3]));
         }
 
@@ -24,8 +24,7 @@ namespace SKTRFIDSERVER
         //{
         //    Application.EnableVisualStyles();
         //    Application.SetCompatibleTextRenderingDefault(false);
-        //    Application.Run(new Form1("AUTO", "192.168.250.102", "4", "1"));
-
+        //    Application.Run(new Form1("AUTO", "192.168.250.103", "5", "1"));
         //}
     }
 }
