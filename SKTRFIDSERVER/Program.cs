@@ -24,7 +24,7 @@ namespace SKTRFIDSERVER
         //{
         //    Application.EnableVisualStyles();
         //    Application.SetCompatibleTextRenderingDefault(false);
-        //    Application.Run(new Form1("AUTO", "192.168.250.103", "5", "1"));
+        //    Application.Run(new Form1("AUTO", "192.168.250.102", "2", "1"));
         //}
     }
 }

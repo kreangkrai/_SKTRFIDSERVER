@@ -59,9 +59,7 @@ namespace SKTRFIDSERVER
         string queue_status = string.Empty;
         string dump_no = string.Empty;
 
-        int count_insert_api = 0;
-
-        bool check_tag_original = true;
+        //bool check_tag_original = true;
 
         string queue_trig = string.Empty;
         DataModel data_dump = new DataModel();
@@ -195,13 +193,13 @@ namespace SKTRFIDSERVER
                                 var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1000, 1);
                                 if (tuple.Item1.Status == "SUCCESS")
                                 {
-                                    if (check_tag_original)
-                                    {
+                                    //if (check_tag_original)
+                                    //{
                                         tag_id = tuple.Item1.Tags[0].IdentiferString;
                                         SelectedTag = tuple.Item1.Tags[0];
 
-                                        check_tag_original = false;
-                                    }
+                                       // check_tag_original = false;
+                                    //}
 
                                     string _rfid = tag_id.Substring(0, 4); // RFID
                                     if (_rfid == "0000") // Check Invalid RFID
@@ -532,7 +530,6 @@ namespace SKTRFIDSERVER
             OpcUaService.Instance.Disconnect();
             cj2.Active = false;
             cj2.Dispose();
-            Application.Exit();
         }
 
         private DialogResult spawnForm(string title, string text1, string text2)
