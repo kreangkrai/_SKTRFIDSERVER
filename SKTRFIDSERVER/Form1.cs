@@ -280,21 +280,32 @@ namespace SKTRFIDSERVER
                                         data_dump.crop_year = Setting.crop_year;
                                         data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
 
-                                        CheckInternet = checkInternet();
-                                        if (CheckInternet)  // Online Read data from api
+                                        
+                                        bool check_response_api = false;
+
+                                        while (!check_response_api)
                                         {
-                                            // Call Data From API
-                                            rfid = await API.CallAPI(data_dump);
-                                            if (rfid.Data[0].Barcode != "1") // Check Valid Barcode
+                                            CheckInternet = checkInternet();
+                                            if (CheckInternet)  // Online Read data from api
                                             {
-                                                //Update Value from API
-                                                weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
-                                                cane_type = rfid.Data[0].CaneType;
+                                                // Call Data From API
+                                                rfid = await API.CallAPI(data_dump);
+                                                if (rfid.Data.Count > 0)
+                                                {
+                                                    if (rfid.Data[0].Barcode != "1") // Check Valid Barcode
+                                                    {
+                                                        //Update Value from API
+                                                        weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
+                                                        cane_type = rfid.Data[0].CaneType;
+                                                    }
+                                                    check_response_api = true;
+                                                }
                                             }
-                                        }
-                                        else // Offline Read From RFID Card
-                                        {
-                                            rfid = Accessory.ReadRFIDCard(tag_id);
+                                            else // Offline Read From RFID Card
+                                            {
+                                                rfid = Accessory.ReadRFIDCard(tag_id);
+                                                check_response_api = true;
+                                            }
                                         }
                                     }
 

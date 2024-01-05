@@ -10,7 +10,7 @@ namespace SKTRFIDLIBRARY.Model
     public class RFIDModel
     {
         [JsonProperty("data")]
-        public List<Data> Data { get; set; }
+        public List<Data> Data { get; set; } = new List<Data>();
     }
     public partial class Data
     {
