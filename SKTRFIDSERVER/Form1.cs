@@ -193,13 +193,9 @@ namespace SKTRFIDSERVER
                                 var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1000, 1);
                                 if (tuple.Item1.Status == "SUCCESS")
                                 {
-                                    //if (check_tag_original)
-                                    //{
+
                                         tag_id = tuple.Item1.Tags[0].IdentiferString;
                                         SelectedTag = tuple.Item1.Tags[0];
-
-                                       // check_tag_original = false;
-                                    //}
 
                                     string _rfid = tag_id.Substring(0, 4); // RFID
                                     if (_rfid == "0000") // Check Invalid RFID
@@ -280,36 +276,33 @@ namespace SKTRFIDSERVER
                                         data_dump.crop_year = Setting.crop_year;
                                         data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
 
-                                        
-                                        bool check_response_api = false;
-
-                                        while (!check_response_api)
+                                        CheckInternet = checkInternet();
+                                        if (CheckInternet)  // Online Read data from api
                                         {
-                                            CheckInternet = checkInternet();
-                                            if (CheckInternet)  // Online Read data from api
+                                            // Call Data From API
+                                            rfid = await API.CallAPI(data_dump);
+                                            Thread.Sleep(200);
+                                            if (rfid.Data.Count > 0)
                                             {
-                                                // Call Data From API
-                                                rfid = await API.CallAPI(data_dump);
-                                                Thread.Sleep(200);
-                                                if (rfid.Data.Count > 0)
+                                                if (rfid.Data[0].Barcode != "1") // Check Valid Barcode
                                                 {
-                                                    if (rfid.Data[0].Barcode != "1") // Check Valid Barcode
-                                                    {
-                                                        //Update Value from API
-                                                        weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
-                                                        cane_type = rfid.Data[0].CaneType;
-                                                    }
-                                                    check_response_api = true;
+                                                    //Update Value from API
+                                                    weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
+                                                    cane_type = rfid.Data[0].CaneType;
                                                 }
                                             }
-                                            else // Offline Read From RFID Card
+                                            else
                                             {
+                                                // Offline Read From RFID Card
                                                 rfid = Accessory.ReadRFIDCard(tag_id);
-                                                check_response_api = true;
-                                            }                                           
+                                            }
+                                        }
+                                        else // Offline Read From RFID Card
+                                        {
+                                            rfid = Accessory.ReadRFIDCard(tag_id);
                                         }
                                     }
-
+                                    
                                     Thread.Sleep(1000);
 
                                     #endregion SCAN TAG
