@@ -18,7 +18,7 @@ namespace SKTRFIDLIBRARY.Service
             try
             {
                 HttpClient client = new HttpClient();
-                string url = $"http://10.43.6.33/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
+                string url = $"http://10.43.6.41:81/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
                 HttpResponseMessage response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
@@ -39,7 +39,7 @@ namespace SKTRFIDLIBRARY.Service
             try
             {
                 HttpClient client = new HttpClient();
-                string url = $"http://10.43.6.33/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
+                string url = $"http://10.43.6.41:81/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
                 HttpResponseMessage response = await client.PostAsync(url, null);
                 if (response.IsSuccessStatusCode)
                 {
@@ -60,7 +60,7 @@ namespace SKTRFIDLIBRARY.Service
             try
             {
                 HttpClient client = new HttpClient();
-                string url = $"http://10.43.6.33/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
+                string url = $"http://10.43.6.41:81/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
                 HttpResponseMessage response = await client.PutAsync(url, null);
                 if (response.IsSuccessStatusCode)
                 {

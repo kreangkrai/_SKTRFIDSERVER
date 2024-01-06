@@ -649,7 +649,7 @@ namespace SKTRFIDSERVER
             {
                 using (WebClient client = new WebClient())
                 {
-                    using (client.OpenRead("http://10.43.6.33/"))
+                    using (client.OpenRead("http://10.43.6.41:81/"))
                     {
                         return true;
                     }
