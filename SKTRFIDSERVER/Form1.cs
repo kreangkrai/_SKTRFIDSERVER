@@ -290,6 +290,7 @@ namespace SKTRFIDSERVER
                                             {
                                                 // Call Data From API
                                                 rfid = await API.CallAPI(data_dump);
+                                                Thread.Sleep(200);
                                                 if (rfid.Data.Count > 0)
                                                 {
                                                     if (rfid.Data[0].Barcode != "1") // Check Valid Barcode
@@ -305,7 +306,7 @@ namespace SKTRFIDSERVER
                                             {
                                                 rfid = Accessory.ReadRFIDCard(tag_id);
                                                 check_response_api = true;
-                                            }
+                                            }                                           
                                         }
                                     }
 
