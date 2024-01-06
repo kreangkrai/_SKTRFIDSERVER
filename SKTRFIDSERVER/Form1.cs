@@ -509,6 +509,8 @@ namespace SKTRFIDSERVER
             finally
             {
                 OpcUaService.Instance.Disconnect();
+                cj2.Active = false;
+                cj2.Dispose();
                 this.Close();
             }
         }
@@ -532,9 +534,7 @@ namespace SKTRFIDSERVER
 
         private  void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            OpcUaService.Instance.Disconnect();
-            cj2.Active = false;
-            cj2.Dispose();
+            
         }
 
         private DialogResult spawnForm(string title, string text1, string text2)
