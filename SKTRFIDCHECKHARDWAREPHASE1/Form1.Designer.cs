@@ -73,9 +73,9 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.groupBox1.Controls.Add(this.btnRFIDCheck1);
             this.groupBox1.Font = new System.Drawing.Font("Angsana New", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(9, 69);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(670, 276);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
@@ -86,7 +86,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnIdent3_2.BackColor = System.Drawing.Color.White;
             this.btnIdent3_2.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnIdent3_2.Location = new System.Drawing.Point(543, 150);
-            this.btnIdent3_2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnIdent3_2.Margin = new System.Windows.Forms.Padding(2);
             this.btnIdent3_2.Name = "btnIdent3_2";
             this.btnIdent3_2.Size = new System.Drawing.Size(120, 73);
             this.btnIdent3_2.TabIndex = 13;
@@ -98,7 +98,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnIdent2_2.BackColor = System.Drawing.Color.White;
             this.btnIdent2_2.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnIdent2_2.Location = new System.Drawing.Point(424, 150);
-            this.btnIdent2_2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnIdent2_2.Margin = new System.Windows.Forms.Padding(2);
             this.btnIdent2_2.Name = "btnIdent2_2";
             this.btnIdent2_2.Size = new System.Drawing.Size(120, 73);
             this.btnIdent2_2.TabIndex = 12;
@@ -110,7 +110,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnIdent1_2.BackColor = System.Drawing.Color.White;
             this.btnIdent1_2.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnIdent1_2.Location = new System.Drawing.Point(304, 150);
-            this.btnIdent1_2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnIdent1_2.Margin = new System.Windows.Forms.Padding(2);
             this.btnIdent1_2.Name = "btnIdent1_2";
             this.btnIdent1_2.Size = new System.Drawing.Size(120, 73);
             this.btnIdent1_2.TabIndex = 11;
@@ -142,7 +142,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnIdent0_2.BackColor = System.Drawing.Color.White;
             this.btnIdent0_2.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnIdent0_2.Location = new System.Drawing.Point(184, 150);
-            this.btnIdent0_2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnIdent0_2.Margin = new System.Windows.Forms.Padding(2);
             this.btnIdent0_2.Name = "btnIdent0_2";
             this.btnIdent0_2.Size = new System.Drawing.Size(120, 73);
             this.btnIdent0_2.TabIndex = 8;
@@ -155,7 +155,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnRFIDCheck2.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnRFIDCheck2.Font = new System.Drawing.Font("Angsana New", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRFIDCheck2.Location = new System.Drawing.Point(8, 150);
-            this.btnRFIDCheck2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnRFIDCheck2.Margin = new System.Windows.Forms.Padding(2);
             this.btnRFIDCheck2.Name = "btnRFIDCheck2";
             this.btnRFIDCheck2.Size = new System.Drawing.Size(172, 73);
             this.btnRFIDCheck2.TabIndex = 7;
@@ -168,7 +168,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnIdent3_1.BackColor = System.Drawing.Color.White;
             this.btnIdent3_1.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnIdent3_1.Location = new System.Drawing.Point(544, 35);
-            this.btnIdent3_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnIdent3_1.Margin = new System.Windows.Forms.Padding(2);
             this.btnIdent3_1.Name = "btnIdent3_1";
             this.btnIdent3_1.Size = new System.Drawing.Size(120, 73);
             this.btnIdent3_1.TabIndex = 6;
@@ -180,7 +180,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnIdent2_1.BackColor = System.Drawing.Color.White;
             this.btnIdent2_1.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnIdent2_1.Location = new System.Drawing.Point(424, 35);
-            this.btnIdent2_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnIdent2_1.Margin = new System.Windows.Forms.Padding(2);
             this.btnIdent2_1.Name = "btnIdent2_1";
             this.btnIdent2_1.Size = new System.Drawing.Size(120, 73);
             this.btnIdent2_1.TabIndex = 5;
@@ -192,7 +192,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnIdent1_1.BackColor = System.Drawing.Color.White;
             this.btnIdent1_1.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnIdent1_1.Location = new System.Drawing.Point(305, 35);
-            this.btnIdent1_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnIdent1_1.Margin = new System.Windows.Forms.Padding(2);
             this.btnIdent1_1.Name = "btnIdent1_1";
             this.btnIdent1_1.Size = new System.Drawing.Size(120, 73);
             this.btnIdent1_1.TabIndex = 4;
@@ -224,7 +224,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnIdent0_1.BackColor = System.Drawing.Color.White;
             this.btnIdent0_1.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnIdent0_1.Location = new System.Drawing.Point(185, 35);
-            this.btnIdent0_1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnIdent0_1.Margin = new System.Windows.Forms.Padding(2);
             this.btnIdent0_1.Name = "btnIdent0_1";
             this.btnIdent0_1.Size = new System.Drawing.Size(120, 73);
             this.btnIdent0_1.TabIndex = 1;
@@ -237,7 +237,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnRFIDCheck1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnRFIDCheck1.Font = new System.Drawing.Font("Angsana New", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRFIDCheck1.Location = new System.Drawing.Point(8, 35);
-            this.btnRFIDCheck1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnRFIDCheck1.Margin = new System.Windows.Forms.Padding(2);
             this.btnRFIDCheck1.Name = "btnRFIDCheck1";
             this.btnRFIDCheck1.Size = new System.Drawing.Size(172, 73);
             this.btnRFIDCheck1.TabIndex = 0;
@@ -253,9 +253,9 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.groupBox2.Controls.Add(this.btnPLCCheck1);
             this.groupBox2.Font = new System.Drawing.Font("Angsana New", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(9, 349);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox2.Size = new System.Drawing.Size(670, 264);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
@@ -266,7 +266,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnPLC1.BackColor = System.Drawing.Color.White;
             this.btnPLC1.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPLC1.Location = new System.Drawing.Point(184, 36);
-            this.btnPLC1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnPLC1.Margin = new System.Windows.Forms.Padding(2);
             this.btnPLC1.Name = "btnPLC1";
             this.btnPLC1.Size = new System.Drawing.Size(120, 73);
             this.btnPLC1.TabIndex = 17;
@@ -299,7 +299,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnPLCCheck1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnPLCCheck1.Font = new System.Drawing.Font("Angsana New", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnPLCCheck1.Location = new System.Drawing.Point(8, 36);
-            this.btnPLCCheck1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnPLCCheck1.Margin = new System.Windows.Forms.Padding(2);
             this.btnPLCCheck1.Name = "btnPLCCheck1";
             this.btnPLCCheck1.Size = new System.Drawing.Size(172, 73);
             this.btnPLCCheck1.TabIndex = 11;
@@ -327,7 +327,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.lblPhase.Name = "lblPhase";
             this.lblPhase.Size = new System.Drawing.Size(50, 73);
             this.lblPhase.TabIndex = 3;
-            this.lblPhase.Text = "1";
+            this.lblPhase.Text = "2";
             // 
             // Form1
             // 
@@ -338,7 +338,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.Controls.Add(this.label2);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

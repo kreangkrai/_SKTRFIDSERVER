@@ -39,22 +39,28 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             cj2.LocalPort = 2;
             cj2.Active = true;
 
-            //cj2.WriteVariable("Bar_ID1", "107191");
-
             lblPLCIP1.Text = setting.ip_plc;
             try
             {
-                bool auto_d1 = (bool)cj2.ReadVariable("Call_D1");
-                btnPLC1.BackColor = Color.YellowGreen;
+                if (phase == 1)
+                {
+                    bool auto_d1 = (bool)cj2.ReadVariable("Call_D1");
+                    btnPLC1.BackColor = Color.YellowGreen;
+                }
+                if (phase == 2)
+                {
+                    bool auto_d8 = (bool)cj2.ReadVariable("Call_D8");
+                    btnPLC1.BackColor = Color.YellowGreen;
+                }
             }
             catch
             {
                 btnPLC1.BackColor = Color.Red;
-                }
-
             }
 
-        
+        }
+
+       
         private async void btnRFIDCheck1_Click(object sender, EventArgs e)
         {
             List<Reader> Readers = new List<Reader>();

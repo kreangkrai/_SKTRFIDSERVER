@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Interface\IAccessory.cs" />
     <Compile Include="Interface\IAPI.cs" />
+    <Compile Include="Interface\ICodeType.cs" />
     <Compile Include="Interface\IRFID.cs" />
     <Compile Include="Interface\ISetting.cs" />
     <Compile Include="Interface\ITagLog.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\AccessoryService.cs" />
     <Compile Include="Service\APIService.cs" />
+    <Compile Include="Service\CodeTypeService.cs" />
     <Compile Include="Service\RFIDService.cs" />
     <Compile Include="Service\SettingService.cs" />
     <Compile Include="Service\TagLogService.cs" />

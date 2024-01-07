@@ -22,6 +22,7 @@ namespace SKTRFIDTAG
         private IAccessory Accessory;
         private ITagLog TagLog;
         private ISetting Setting;
+        private ICodeType CodeType;
         List<TagLogModel> tags = new List<TagLogModel>();
         static List<Reader> Readers = new List<Reader>();
         static RfidTag SelectedTag = null;
@@ -36,6 +37,7 @@ namespace SKTRFIDTAG
             Accessory = new AccessoryService();
             TagLog = new TagLogService(phase);
             Setting = new SettingService(phase);
+            CodeType = new CodeTypeService();
             this.Text = "SKT RFID TAG PHASE " + phase;
         }
 
@@ -157,11 +159,11 @@ namespace SKTRFIDTAG
                             
                             txtRFID.Text = data.rfid;
                             txtTruck.Text = data.truck_number;
-                            txtTypeTruck.Text = truckType(data.truck_type);
+                            txtTypeTruck.Text = CodeType.truckType(data.truck_type);
                             txtBarcode.Text = data.barcode;
-                            txtTypeCane.Text = CaneType(data.cane_type);
-                            txtTypeWeight.Text = weightType(data.weight_type);
-                            txtQueue.Text = queueStatus(data.queue_status);
+                            txtTypeCane.Text = CodeType.CaneType(data.cane_type);
+                            txtTypeWeight.Text = CodeType.weightType(data.weight_type);
+                            txtQueue.Text = CodeType.queueStatus(data.queue_status);
                         }
                         else
                         {
@@ -188,59 +190,15 @@ namespace SKTRFIDTAG
 
                 txtRFID.Text = data.rfid;
                 txtTruck.Text = data.truck_number;
-                txtTypeTruck.Text = truckType(data.truck_type);
+                txtTypeTruck.Text = CodeType.truckType(data.truck_type);
                 txtBarcode.Text = data.barcode;
-                txtTypeCane.Text = CaneType(data.cane_type);
-                txtTypeWeight.Text = weightType(data.weight_type);
-                txtQueue.Text = queueStatus(data.queue_status);
+                txtTypeCane.Text = CodeType.CaneType(data.cane_type);
+                txtTypeWeight.Text = CodeType.weightType(data.weight_type);
+                txtQueue.Text = CodeType.queueStatus(data.queue_status);
                 txtTag.Text = tag.Substring(0, 23) + "0";
             }
         }
-        private string CaneType(int n)
-        {
-            if (n == -1)
-            {
-                return "";
-            }
-            List<string> canes_type = new List<string>();          
-            canes_type.Add("สดลำ");
-            canes_type.Add("ไฟไหม้ลำ");
-            canes_type.Add("สดท่อน");
-            canes_type.Add("ไฟไหม้ท่อน");
-
-            return canes_type[n];
-        }
-        private string truckType(int n)
-        {
-            if (n == -1)
-            {
-                return "";
-            }
-            List<string> trucks_type = new List<string>();
-            trucks_type.Add("");
-            trucks_type.Add("รถเดี่ยว");
-            trucks_type.Add("พ่วงแม่");
-            trucks_type.Add("พ่วงลูก");
-            return trucks_type[n];
-        }
-        private string weightType(int n)
-        {
-            List<string> weights_type = new List<string>();
-            weights_type.Add("");
-            weights_type.Add("ชั่งรวม");
-            weights_type.Add("ชั่งแยก");
-            return weights_type[n];
-        }
-        private string queueStatus(int n)
-        {
-            List<string> queues_status = new List<string>();
-            queues_status.Add("");
-            queues_status.Add("แจ้งคิวแล้ว");
-            queues_status.Add("ชั่งเข้าแล้ว");
-            queues_status.Add("ดัมพ์แล้ว");
-            return queues_status[n];
-        }
-
+ 
         private void Form1_Load(object sender, EventArgs e)
         {           
             SettingModel setting = Setting.GetSetting();
