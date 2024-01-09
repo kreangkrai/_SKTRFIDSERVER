@@ -32,7 +32,6 @@ namespace SKTRFIDSERVER
         static RfidTag SelectedTag = null;
         Reader readers = null;
         private IRFID RFID;
-        private ITagLog TagLog;
         CJ2Compolet cj2;
         private ISetting Settings;
         private IAPI API;
@@ -73,7 +72,6 @@ namespace SKTRFIDSERVER
             RFID = new RFIDService(phase);
             Settings = new SettingService(phase);
             rfid = new RFIDModel();
-            TagLog = new TagLogService(phase);
             API = new APIService();
             Accessory = new AccessoryService();
         }
@@ -215,17 +213,7 @@ namespace SKTRFIDSERVER
                                     else // Valid RFID
                                     {
                                         if (tag_id.Length == 24) // Check Valid RFID Card  24 Charector
-                                        {
-                                            // Insert Data Log RFID Original
-                                            string rfid_ = int.Parse(tag_id.Substring(0, 4), System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
-                                            TagLogModel taglog = new TagLogModel()
-                                            {
-                                                tag = tag_id,
-                                                tag_date = DateTime.Now,
-                                                rfid = rfid_
-                                            };
-                                            string message = TagLog.InsertTag(taglog);
-
+                                        {                                          
                                             rfid_code = tag_id.Substring(0, 4);
                                             license_plate = tag_id.Substring(4, 10);
                                             truck_type = tag_id.Substring(14, 1);
@@ -266,7 +254,7 @@ namespace SKTRFIDSERVER
                                         data_dump.crop_year = Setting.crop_year;
                                         data_dump.rfid = int.Parse(rfid_code, System.Globalization.NumberStyles.HexNumber).ToString().PadLeft(6, '0');
 
-                                        CheckInternet = checkInternet();
+                                        CheckInternet = API.checkInternet();
                                         if (CheckInternet)  // Online Read data from api
                                         {
                                             // Call Data From API
@@ -662,7 +650,7 @@ namespace SKTRFIDSERVER
             if (dialog == DialogResult.OK)
             {
                 //Check Local Internet
-                bool _checkInternet = checkInternet();
+                bool _checkInternet = API.checkInternet();
                 if (_checkInternet)  // Online Read data from api
                 {
                     //Call Form Alert Allergen
@@ -691,23 +679,6 @@ namespace SKTRFIDSERVER
                 RFID.UpdateRFIDAllergenLog(data);
                 newForm.Close();
             }
-        }
-        bool checkInternet()
-        {
-            try
-            {
-                using (WebClient client = new WebClient())
-                {
-                    using (client.OpenRead("http://10.43.6.41:81/"))
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }        
+        }              
     }
 }

@@ -20,46 +20,24 @@ namespace SKTRFIDTAG
     {
         int phase = 0;
         private IAccessory Accessory;
-        private ITagLog TagLog;
         private ISetting Setting;
         private ICodeType CodeType;
-        List<TagLogModel> tags = new List<TagLogModel>();
         static List<Reader> Readers = new List<Reader>();
         static RfidTag SelectedTag = null;
         Reader readers = null;
         string tag_id = "";
         Reader SelectedReader = null;
         bool writer = false;
+        string tag_data = string.Empty;
         public Form1(string _phase)
         {
             InitializeComponent();
             phase = Int32.Parse(_phase);
-            Accessory = new AccessoryService();
-            TagLog = new TagLogService(phase);
             Setting = new SettingService(phase);
             CodeType = new CodeTypeService();
+            Accessory = new AccessoryService();
             this.Text = "SKT RFID TAG PHASE " + phase;
         }
-
-        private void txtSearchRFID_TextChanged(object sender, EventArgs e)
-        {
-            btnWrite.Enabled = false;
-            txtTag.Text = "";
-            tags = TagLog.GetTagLogByRFID(txtSearchRFID.Text);
-
-            dataGridView1.Rows.Clear();
-            for (int i = 0; i < tags.Count; i++)
-            {
-                DataGridViewRow row = (DataGridViewRow)dataGridView1.Rows[i].Clone();
-                row.Height = 35;
-                row.Cells[0].Value = (i + 1);
-                row.Cells[1].Value = tags[i].tag;
-                row.Cells[2].Value = tags[i].rfid;
-                row.Cells[3].Value = tags[i].tag_date.ToString("dd/MM/yyyy HH:mm:ss");
-                dataGridView1.Rows.Add(row);
-            }
-        }
-
         private async void btnWrite_Click(object sender, EventArgs e)
         {
             DialogResult dialog = MessageBox.Show("ต้องการยืนยันหรือไม่ ?", "SKT RFID", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
@@ -71,7 +49,7 @@ namespace SKTRFIDTAG
                     if (readers != null)
                     {
                         SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
-                        var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1, 1);
+                        var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, true);
                         if (tuple.Item1.Status == "SUCCESS")
                         {
                             tag_id = tuple.Item1.Tags[0].IdentiferString;
@@ -82,50 +60,21 @@ namespace SKTRFIDTAG
                                             .Where(x => x % 2 == 0)
                                             .Select(x => Convert.ToByte(data_write.Substring(x, 2), 16))
                                             .ToArray();
-
-
                             try
                             {
                                 var result_write = await OpcUaService.Instance.WriteTagAsync(SelectedReader, SelectedTag, 0, data);
                                 Thread.Sleep(1000);
                                 if (result_write.Item2.IsGood)
                                 {
-                                    if (readers != null)
-                                    {
-                                        SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
-                                        string read_tag = "";
-                                        try
-                                        {
-                                            var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
-                                            if (result_read.Item2.IsGood)
-                                            {
-                                                read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
-                                                if (read_tag.Contains(txtTag.Text))
-                                                {
-                                                    writer = true;
-                                                    MessageBox.Show("เขียนบัตร เรียบร้อย","SKT RFID");
-                                                    btnWrite.Enabled = false;
-                                                }
-                                                else
-                                                {
-                                                    MessageBox.Show("Error", "SKT RFID",MessageBoxButtons.OK,MessageBoxIcon.Error);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                MessageBox.Show("Error");
-                                            }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            MessageBox.Show(ex.Message);
-                                        }
-                                    }
+                                    writer = true;
+                                    MessageBox.Show("เขียนบัตร เรียบร้อย", "SKT RFID");
+                                    btnWrite.Enabled = false;
                                 }
                                 else
                                 {
                                     MessageBox.Show("Error");
                                 }
+
                             }
                             catch (Exception ex)
                             {
@@ -147,15 +96,14 @@ namespace SKTRFIDTAG
                     tag_id = tuple.Item1.Tags[0].IdentiferString;
                     SelectedTag = tuple.Item1.Tags[0];
 
-                    string read_tag = "";
                     try
                     {
                         var result_read = await OpcUaService.Instance.ReadTagAsync(SelectedReader, SelectedTag, 0, 13);
                         if (result_read.Item2.IsGood)
                         {
-                            read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
-                            txtTag.Text = read_tag;
-                            DataModel data = Accessory.ReadDataRFIDCard(read_tag);
+                            tag_data = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
+                            txtTag.Text = tag_data;
+                            DataModel data = Accessory.ReadDataRFIDCard(tag_data);
                             
                             txtRFID.Text = data.rfid;
                             txtTruck.Text = data.truck_number;
@@ -164,41 +112,23 @@ namespace SKTRFIDTAG
                             txtTypeCane.Text = CodeType.CaneType(data.cane_type);
                             txtTypeWeight.Text = CodeType.weightType(data.weight_type);
                             txtQueue.Text = CodeType.queueStatus(data.queue_status);
+
+                            txtRFID.Enabled = true;
                         }
                         else
                         {
+                            txtRFID.Enabled = false;
                             MessageBox.Show("Error");
                         }
                     }
                     catch (Exception ex)
                     {
+                        txtRFID.Enabled = false;
                         MessageBox.Show(ex.Message);
                     }
                 }
             }
         }
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (toolStripStatusConnect.Text == "Connected")
-            {
-                btnWrite.Enabled = true;               
-            }
-            if (e.RowIndex > -1)
-            {
-                string tag = tags[e.RowIndex].tag;
-                DataModel data = Accessory.ReadDataRFIDCard(tag);
-
-                txtRFID.Text = data.rfid;
-                txtTruck.Text = data.truck_number;
-                txtTypeTruck.Text = CodeType.truckType(data.truck_type);
-                txtBarcode.Text = data.barcode;
-                txtTypeCane.Text = CodeType.CaneType(data.cane_type);
-                txtTypeWeight.Text = CodeType.weightType(data.weight_type);
-                txtQueue.Text = CodeType.queueStatus(data.queue_status);
-                txtTag.Text = tag.Substring(0, 23) + "0";
-            }
-        }
- 
         private void Form1_Load(object sender, EventArgs e)
         {           
             SettingModel setting = Setting.GetSetting();
@@ -247,6 +177,42 @@ namespace SKTRFIDTAG
         private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             await OpcUaService.Instance.DisconnectAsync();
+        }
+
+        private void txtRFID_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void txtRFID_TextChanged(object sender, EventArgs e)
+        {
+            if (txtRFID.TextLength >= 6)
+            {
+                var tag_stringBuilder = new StringBuilder(tag_data);
+                tag_stringBuilder.Remove(0, 4);
+                tag_stringBuilder.Insert(0, Int32.Parse(txtRFID.Text).ToString("x").ToUpper().PadLeft(4,'0'));
+                txtTag.Text = tag_stringBuilder.ToString();
+                btnWrite.Enabled = true;
+            }
+            else
+            {
+                btnWrite.Enabled = false;
+            }
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            txtRFID.Text = "";
+            txtBarcode.Text = "";
+            txtQueue.Text = "";
+            txtTag.Text = "";
+            txtTruck.Text = "";
+            txtTypeCane.Text = "";
+            txtTypeTruck.Text = "";
+            txtTypeWeight.Text = "";
         }
     }
 }

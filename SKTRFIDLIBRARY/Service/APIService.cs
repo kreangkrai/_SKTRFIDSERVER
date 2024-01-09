@@ -4,6 +4,7 @@ using SKTRFIDLIBRARY.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,13 @@ namespace SKTRFIDLIBRARY.Service
             try
             {
                 HttpClient client = new HttpClient();
+
+                //PRODUCTION
                 string url = $"http://10.43.6.41:81/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
+
+                //DEVELOP
+                //string url = $"http://10.43.6.33/jsonforandroidskt/getRfidDump?areaid={data.area_id}&cropyear={data.crop_year}&card={data.rfid}";
+
                 HttpResponseMessage response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
@@ -33,13 +40,45 @@ namespace SKTRFIDLIBRARY.Service
             }
         }
 
+        public bool checkInternet()
+        {
+            
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    //PRODUCTION
+                    using (client.OpenRead("http://10.43.6.41:81/"))
+                    {
+                        return true;
+                    }
+
+                    //DEVELOP
+                    //using (client.OpenRead("http://10.43.6.33/"))
+                    //{
+                    //    return true;
+                    //}
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<DataUpdateModel> InsertDataAPI(int areaid, string cropyear, string barcode, int phase, int dump, string type)
         {
             DataUpdateModel data = new DataUpdateModel();
             try
             {
                 HttpClient client = new HttpClient();
+
+                // PRODUCION
                 string url = $"http://10.43.6.41:81/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
+
+                // DEVELOP
+                //string url = $"http://10.43.6.33/jsonforandroidskt/insertDump?areaid={areaid}&cropyear={cropyear}&barcode={barcode}&phase={phase}&dump={dump}&type={type}";
+
                 HttpResponseMessage response = await client.PostAsync(url, null);
                 if (response.IsSuccessStatusCode)
                 {
@@ -60,7 +99,13 @@ namespace SKTRFIDLIBRARY.Service
             try
             {
                 HttpClient client = new HttpClient();
+
+                //PRODUCTION
                 string url = $"http://10.43.6.41:81/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
+
+                //DEVELOP
+                //string url = $"http://10.43.6.33/jsonforandroidskt/AllergenDump?areaid={area_id}&cropyear={crop_year}&barcode={barcode}&alled={alled}";
+
                 HttpResponseMessage response = await client.PutAsync(url, null);
                 if (response.IsSuccessStatusCode)
                 {

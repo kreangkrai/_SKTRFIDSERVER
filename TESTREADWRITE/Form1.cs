@@ -28,7 +28,7 @@ namespace TESTREADWRITE
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            if (await OpcUaService.Instance.ConnectAsync("192.168.250.103", 4840))
+            if (await OpcUaService.Instance.ConnectAsync("192.168.250.113", 4840))
             {
                 RefreshReaderListCommandExecute();
                 readers = Readers.Where(w => w.Ident == "Ident 3").FirstOrDefault();
