@@ -178,7 +178,7 @@ namespace SKTRFIDSERVER
                             try
                             {
                                 SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
-                                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader, 1000, 1);
+                                var tuple = await OpcUaService.Instance.ScanAsync(SelectedReader,1000,1);
                                 if (tuple.Item1.Status == "SUCCESS")
                                 {
 
@@ -281,73 +281,81 @@ namespace SKTRFIDSERVER
                                         }
                                     }
 
-                                    // PLC
-                                    cj2 = new CJ2Compolet();
-                                    cj2.ConnectionType = ConnectionType.UCMM;
-                                    cj2.UseRoutePath = false;
-                                    cj2.PeerAddress = Setting.ip_plc;
-                                    cj2.LocalPort = 2;
-                                    cj2.Active = true;
+                                    try
+                                    {
+                                        // PLC
+                                        cj2 = new CJ2Compolet();
+                                        cj2.ConnectionType = ConnectionType.UCMM;
+                                        cj2.UseRoutePath = false;
+                                        cj2.PeerAddress = Setting.ip_plc;
+                                        cj2.LocalPort = 2;
+                                        cj2.Active = true;
 
-                                    Thread.Sleep(1000);
+                                        Thread.Sleep(1000);
 
-                                    #endregion SCAN TAG
+                                        #endregion SCAN TAG
 
-                                    // Send Data To PLC
-                                    
-                                    if (phase == 1)
-                                    {                                      
-                                        string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
+                                        // Send Data To PLC
+
+                                        if (phase == 1)
+                                        {
+                                            string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
                                                                                                                 "TY_BF_D2" ,
                                                                                                                 "TY_BF_D3" ,
                                                                                                                 "TY_BF_D4" ,
                                                                                                                 "TY_BF_D5" ,
                                                                                                                 "TY_BF_D6" ,
                                                                                                                 "TY_BF_D7" };
-                                        string _caneType = "0"; // สด
-                                        if (cane_type == "1" || cane_type == "3") // ไฟไหม้
-                                        {
-                                            _caneType = "1";
-                                        }
-                                        cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
-
-                                        string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
+                                            string _caneType = "0"; // สด
+                                            if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                            {
+                                                _caneType = "1";
+                                            }
+                                            cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
+                                            Thread.Sleep(100);
+                                            string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
                                                                                                                 "Bar_ID2" ,
                                                                                                                 "Bar_ID3" ,
                                                                                                                 "Bar_ID4" ,
                                                                                                                 "Bar_ID5" ,
                                                                                                                 "Bar_ID6" ,
                                                                                                                 "Bar_ID7" };
-                                        cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
-                                    }
+                                            cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                        }
 
-                                    if (phase == 2)
-                                    {
-                                        string[] dump_plc_caneType = new string[6] { "TY_BF_D8" ,
+                                        if (phase == 2)
+                                        {
+                                            string[] dump_plc_caneType = new string[6] { "TY_BF_D8" ,
                                                                                                                     "TY_BF_D9" ,
                                                                                                                     "TY_BF_D10" ,
                                                                                                                     "TY_BF_D11" ,
                                                                                                                     "TY_BF_D12" ,
                                                                                                                     "TY_BF_D13" };
-                                        string _caneType = "0"; // สด
-                                        if (cane_type == "1" || cane_type == "3") // ไฟไหม้
-                                        {
-                                            _caneType = "1";
-                                        }
-                                        cj2.WriteVariable(dump_plc_caneType[dump - (1 + 7)], _caneType);
-
-                                        string[] dump_plc_Barcode = new string[6] { "Bar_ID8" ,
+                                            string _caneType = "0"; // สด
+                                            if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                            {
+                                                _caneType = "1";
+                                            }
+                                            cj2.WriteVariable(dump_plc_caneType[dump - (1 + 7)], _caneType);
+                                            Thread.Sleep(100);
+                                            string[] dump_plc_Barcode = new string[6] { "Bar_ID8" ,
                                                                                                                 "Bar_ID9" ,
                                                                                                                 "Bar_ID10" ,
                                                                                                                 "Bar_ID11" ,
                                                                                                                 "Bar_ID12" ,
                                                                                                                 "Bar_ID13" };
-                                        cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                            cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                        }
+                                        status_scan = true;
+
+                                        //Release All Resource CJ2
+                                        cj2.Active = false;
+                                        cj2.Dispose();
                                     }
-                                    status_scan = true;
-                                    //Release All Resource CJ2
-                                    cj2.Active = false;
-                                    cj2.Dispose();
+                                    catch
+                                    {
+
+                                    }
 
                                     //#region WRITE TAG
                                     ////string data_write = tag_id;
