@@ -280,9 +280,11 @@ namespace SKTRFIDSERVER
                                             rfid = Accessory.ReadRFIDCard(tag_id);
                                         }
                                     }
-
+                                   
+                                    #region Read Only
                                     try
                                     {
+                                        //Read Only
                                         // PLC
                                         cj2 = new CJ2Compolet();
                                         cj2.ConnectionType = ConnectionType.UCMM;
@@ -293,19 +295,17 @@ namespace SKTRFIDSERVER
 
                                         Thread.Sleep(1000);
 
-                                        #endregion SCAN TAG
-
                                         // Send Data To PLC
 
                                         if (phase == 1)
                                         {
-                                            string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
-                                                                                                                "TY_BF_D2" ,
-                                                                                                                "TY_BF_D3" ,
-                                                                                                                "TY_BF_D4" ,
-                                                                                                                "TY_BF_D5" ,
-                                                                                                                "TY_BF_D6" ,
-                                                                                                                "TY_BF_D7" };
+                                            string[] dump_plc_caneType = new string[7] {  "TY_BF_D1" ,
+                                                                                          "TY_BF_D2" ,
+                                                                                          "TY_BF_D3" ,
+                                                                                          "TY_BF_D4" ,
+                                                                                          "TY_BF_D5" ,
+                                                                                          "TY_BF_D6" ,
+                                                                                          "TY_BF_D7" };
                                             string _caneType = "0"; // สด
                                             if (cane_type == "1" || cane_type == "3") // ไฟไหม้
                                             {
@@ -314,23 +314,23 @@ namespace SKTRFIDSERVER
                                             cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
                                             Thread.Sleep(100);
                                             string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
-                                                                                                                "Bar_ID2" ,
-                                                                                                                "Bar_ID3" ,
-                                                                                                                "Bar_ID4" ,
-                                                                                                                "Bar_ID5" ,
-                                                                                                                "Bar_ID6" ,
-                                                                                                                "Bar_ID7" };
+                                                                                        "Bar_ID2" ,
+                                                                                        "Bar_ID3" ,
+                                                                                        "Bar_ID4" ,
+                                                                                        "Bar_ID5" ,
+                                                                                        "Bar_ID6" ,
+                                                                                        "Bar_ID7" };
                                             cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
                                         }
 
                                         if (phase == 2)
                                         {
                                             string[] dump_plc_caneType = new string[6] { "TY_BF_D8" ,
-                                                                                                                    "TY_BF_D9" ,
-                                                                                                                    "TY_BF_D10" ,
-                                                                                                                    "TY_BF_D11" ,
-                                                                                                                    "TY_BF_D12" ,
-                                                                                                                    "TY_BF_D13" };
+                                                                                         "TY_BF_D9" ,
+                                                                                         "TY_BF_D10" ,
+                                                                                         "TY_BF_D11" ,
+                                                                                         "TY_BF_D12" ,
+                                                                                         "TY_BF_D13" };
                                             string _caneType = "0"; // สด
                                             if (cane_type == "1" || cane_type == "3") // ไฟไหม้
                                             {
@@ -339,11 +339,11 @@ namespace SKTRFIDSERVER
                                             cj2.WriteVariable(dump_plc_caneType[dump - (1 + 7)], _caneType);
                                             Thread.Sleep(100);
                                             string[] dump_plc_Barcode = new string[6] { "Bar_ID8" ,
-                                                                                                                "Bar_ID9" ,
-                                                                                                                "Bar_ID10" ,
-                                                                                                                "Bar_ID11" ,
-                                                                                                                "Bar_ID12" ,
-                                                                                                                "Bar_ID13" };
+                                                                                        "Bar_ID9" ,
+                                                                                        "Bar_ID10" ,
+                                                                                        "Bar_ID11" ,
+                                                                                        "Bar_ID12" ,
+                                                                                        "Bar_ID13" };
                                             cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
                                         }
                                         status_scan = true;
@@ -356,6 +356,7 @@ namespace SKTRFIDSERVER
                                     {
 
                                     }
+                                    #endregion Read Only
 
                                     //#region WRITE TAG
                                     ////string data_write = tag_id;
@@ -396,61 +397,78 @@ namespace SKTRFIDSERVER
                                     //                    _read_tag = BitConverter.ToString(result_read.Item1).Replace("-", string.Empty);
                                     //                    if (_read_tag.Contains(tag_id))
                                     //                    {
-                                    //                        // Send Data To PLC
-                                    //                        if (phase == 1)
+                                    //                        try
                                     //                        {
-                                    //                            string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
-                                    //                                                                            "TY_BF_D2" ,
-                                    //                                                                            "TY_BF_D3" ,
-                                    //                                                                            "TY_BF_D4" ,
-                                    //                                                                            "TY_BF_D5" ,
-                                    //                                                                            "TY_BF_D6" ,
-                                    //                                                                            "TY_BF_D7" };
-                                    //                            string _caneType = "0"; // สด
-                                    //                            if (cane_type == "1" || cane_type == "3") // ไฟไหม้
-                                    //                            {
-                                    //                                _caneType = "1";
-                                    //                            }
-                                    //                            cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
+                                    //                            //Read and Write
+                                    //                            // PLC
+                                    //                            cj2 = new CJ2Compolet();
+                                    //                            cj2.ConnectionType = ConnectionType.UCMM;
+                                    //                            cj2.UseRoutePath = false;
+                                    //                            cj2.PeerAddress = Setting.ip_plc;
+                                    //                            cj2.LocalPort = 2;
+                                    //                            cj2.Active = true;
 
-                                    //                            string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
+                                    //                            Thread.Sleep(1000);
+                                    //                            // Send Data To PLC
+                                    //                            if (phase == 1)
+                                    //                            {
+                                    //                                string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
+                                    //                                                                             "TY_BF_D2" ,
+                                    //                                                                             "TY_BF_D3" ,
+                                    //                                                                             "TY_BF_D4" ,
+                                    //                                                                             "TY_BF_D5" ,
+                                    //                                                                             "TY_BF_D6" ,
+                                    //                                                                             "TY_BF_D7" };
+                                    //                                string _caneType = "0"; // สด
+                                    //                                if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                    //                                {
+                                    //                                    _caneType = "1";
+                                    //                                }
+                                    //                                cj2.WriteVariable(dump_plc_caneType[dump - 1], _caneType);
+                                    //                                Thread.Sleep(100);
+                                    //                                string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
                                     //                                                                            "Bar_ID2" ,
                                     //                                                                            "Bar_ID3" ,
                                     //                                                                            "Bar_ID4" ,
                                     //                                                                            "Bar_ID5" ,
                                     //                                                                            "Bar_ID6" ,
                                     //                                                                            "Bar_ID7" };
-                                    //                            cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
-                                    //                        }
-
-                                    //                        if (phase == 2)
-                                    //                        {
-                                    //                            string[] dump_plc_caneType = new string[7] { "TY_BF_D1" ,
-                                    //                                                                                "TY_BF_D2" ,
-                                    //                                                                                "TY_BF_D3" ,
-                                    //                                                                                "TY_BF_D4" ,
-                                    //                                                                                "TY_BF_D5" ,
-                                    //                                                                                "TY_BF_D6" ,
-                                    //                                                                                "TY_BF_D7" };
-                                    //                            string _caneType = "0"; // สด
-                                    //                            if (cane_type == "1" || cane_type == "3") // ไฟไหม้
-                                    //                            {
-                                    //                                _caneType = "1";
+                                    //                                cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
                                     //                            }
-                                    //                            cj2.WriteVariable(dump_plc_caneType[dump - (1 + 7)], _caneType);
 
-                                    //                            string[] dump_plc_Barcode = new string[7] { "Bar_ID1" ,
-                                    //                                                                            "Bar_ID2" ,
-                                    //                                                                            "Bar_ID3" ,
-                                    //                                                                            "Bar_ID4" ,
-                                    //                                                                            "Bar_ID5" ,
-                                    //                                                                            "Bar_ID6" ,
-                                    //                                                                            "Bar_ID7" };
-                                    //                            cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                    //                            if (phase == 2)
+                                    //                            {
+                                    //                                string[] dump_plc_caneType = new string[6] { "TY_BF_D8" ,
+                                    //                                                                             "TY_BF_D9" ,
+                                    //                                                                             "TY_BF_D10" ,
+                                    //                                                                             "TY_BF_D11" ,
+                                    //                                                                             "TY_BF_D12" ,
+                                    //                                                                             "TY_BF_D13" };
+                                    //                                string _caneType = "0"; // สด
+                                    //                                if (cane_type == "1" || cane_type == "3") // ไฟไหม้
+                                    //                                {
+                                    //                                    _caneType = "1";
+                                    //                                }
+                                    //                                cj2.WriteVariable(dump_plc_caneType[dump - (1 + 7)], _caneType);
+                                    //                                Thread.Sleep(100);
+                                    //                                string[] dump_plc_Barcode = new string[6] { "Bar_ID8" ,
+                                    //                                                                            "Bar_ID9" ,
+                                    //                                                                            "Bar_ID10" ,
+                                    //                                                                            "Bar_ID11" ,
+                                    //                                                                            "Bar_ID12" ,
+                                    //                                                                            "Bar_ID13" };
+                                    //                                cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                    //                            }
+                                    //                            status_scan = true;
+
+                                    //                            //Release All Resource CJ2
+                                    //                            cj2.Active = false;
+                                    //                            cj2.Dispose();
                                     //                        }
-                                    //                        status_scan = true;
-                                    //                        //status_write = true;
-                                    //                        //MessageBox.Show("Write Success ", data_write);
+                                    //                        catch
+                                    //                        {
+
+                                    //                        }
                                     //                    }
                                     //                }
                                     //            }
@@ -469,6 +487,8 @@ namespace SKTRFIDSERVER
 
                             }
                         }
+
+                        #endregion SCAN TAG
 
                         DateTime now = DateTime.Now;
 
