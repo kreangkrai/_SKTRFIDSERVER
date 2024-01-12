@@ -291,6 +291,7 @@ namespace SKTRFIDSERVER
                                         cj2.UseRoutePath = false;
                                         cj2.PeerAddress = Setting.ip_plc;
                                         cj2.LocalPort = 2;
+                                        cj2.ReceiveTimeLimit = (long)5000;
                                         cj2.Active = true;
 
                                         Thread.Sleep(1000);
