@@ -51,8 +51,16 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnPLCCheck1 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.lblPhase = new System.Windows.Forms.Label();
+            this.btnService = new System.Windows.Forms.Button();
+            this.btnSysmac = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.lblIP = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.btnInternet = new System.Windows.Forms.Button();
+            this.btnIP = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -72,7 +80,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.groupBox1.Controls.Add(this.btnIdent0_1);
             this.groupBox1.Controls.Add(this.btnRFIDCheck1);
             this.groupBox1.Font = new System.Drawing.Font("Angsana New", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(9, 69);
+            this.groupBox1.Location = new System.Drawing.Point(10, 247);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -247,16 +255,18 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.btnSysmac);
+            this.groupBox2.Controls.Add(this.btnService);
             this.groupBox2.Controls.Add(this.btnPLC1);
             this.groupBox2.Controls.Add(this.lblPLCIP1);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.btnPLCCheck1);
             this.groupBox2.Font = new System.Drawing.Font("Angsana New", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(9, 349);
+            this.groupBox2.Location = new System.Drawing.Point(10, 522);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Size = new System.Drawing.Size(670, 264);
+            this.groupBox2.Size = new System.Drawing.Size(670, 150);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "PLC";
@@ -311,7 +321,7 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Angsana New", 40F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(10, 2);
+            this.label2.Location = new System.Drawing.Point(243, 9);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(146, 73);
@@ -322,18 +332,109 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             // 
             this.lblPhase.AutoSize = true;
             this.lblPhase.Font = new System.Drawing.Font("Angsana New", 40F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPhase.Location = new System.Drawing.Point(139, 2);
+            this.lblPhase.Location = new System.Drawing.Point(371, 9);
             this.lblPhase.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblPhase.Name = "lblPhase";
             this.lblPhase.Size = new System.Drawing.Size(50, 73);
             this.lblPhase.TabIndex = 3;
             this.lblPhase.Text = "2";
             // 
+            // btnService
+            // 
+            this.btnService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.btnService.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnService.Font = new System.Drawing.Font("Angsana New", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnService.Location = new System.Drawing.Point(334, 34);
+            this.btnService.Margin = new System.Windows.Forms.Padding(2);
+            this.btnService.Name = "btnService";
+            this.btnService.Size = new System.Drawing.Size(156, 73);
+            this.btnService.TabIndex = 18;
+            this.btnService.Text = "Restart Service";
+            this.btnService.UseVisualStyleBackColor = false;
+            this.btnService.Click += new System.EventHandler(this.btnService_Click);
+            // 
+            // btnSysmac
+            // 
+            this.btnSysmac.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.btnSysmac.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnSysmac.Font = new System.Drawing.Font("Angsana New", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSysmac.Location = new System.Drawing.Point(494, 36);
+            this.btnSysmac.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSysmac.Name = "btnSysmac";
+            this.btnSysmac.Size = new System.Drawing.Size(169, 73);
+            this.btnSysmac.TabIndex = 19;
+            this.btnSysmac.Text = "SYSMAC Gateway";
+            this.btnSysmac.UseVisualStyleBackColor = false;
+            this.btnSysmac.Click += new System.EventHandler(this.btnSysmac_Click);
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.btnIP);
+            this.groupBox3.Controls.Add(this.lblIP);
+            this.groupBox3.Controls.Add(this.label5);
+            this.groupBox3.Controls.Add(this.btnInternet);
+            this.groupBox3.Font = new System.Drawing.Font("Angsana New", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox3.Location = new System.Drawing.Point(11, 74);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox3.Size = new System.Drawing.Size(670, 168);
+            this.groupBox3.TabIndex = 4;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "INTERNET";
+            // 
+            // lblIP
+            // 
+            this.lblIP.AutoSize = true;
+            this.lblIP.Location = new System.Drawing.Point(38, 116);
+            this.lblIP.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblIP.Name = "lblIP";
+            this.lblIP.Size = new System.Drawing.Size(161, 36);
+            this.lblIP.TabIndex = 13;
+            this.lblIP.Text = "http://10.43.6.41:81/";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(8, 117);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(31, 36);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "IP";
+            // 
+            // btnInternet
+            // 
+            this.btnInternet.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.btnInternet.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnInternet.Font = new System.Drawing.Font("Angsana New", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnInternet.Location = new System.Drawing.Point(14, 38);
+            this.btnInternet.Margin = new System.Windows.Forms.Padding(2);
+            this.btnInternet.Name = "btnInternet";
+            this.btnInternet.Size = new System.Drawing.Size(172, 73);
+            this.btnInternet.TabIndex = 11;
+            this.btnInternet.Text = "ตรวจสอบตัวที่ 1";
+            this.btnInternet.UseVisualStyleBackColor = false;
+            this.btnInternet.Click += new System.EventHandler(this.btnInternet_Click);
+            // 
+            // btnIP
+            // 
+            this.btnIP.BackColor = System.Drawing.Color.White;
+            this.btnIP.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnIP.Location = new System.Drawing.Point(190, 38);
+            this.btnIP.Margin = new System.Windows.Forms.Padding(2);
+            this.btnIP.Name = "btnIP";
+            this.btnIP.Size = new System.Drawing.Size(120, 73);
+            this.btnIP.TabIndex = 18;
+            this.btnIP.Text = "Server";
+            this.btnIP.UseVisualStyleBackColor = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(691, 510);
+            this.ClientSize = new System.Drawing.Size(691, 683);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.lblPhase);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.groupBox2);
@@ -348,6 +449,8 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -377,6 +480,13 @@ namespace SKTRFIDCHECKHARDWAREPHASE
         private System.Windows.Forms.Button btnPLC1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lblPhase;
+        private System.Windows.Forms.Button btnService;
+        private System.Windows.Forms.Button btnSysmac;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label lblIP;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button btnInternet;
+        private System.Windows.Forms.Button btnIP;
     }
 }
 

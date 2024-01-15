@@ -8,8 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -230,6 +233,57 @@ namespace SKTRFIDCHECKHARDWAREPHASE
         private void Form1_Load(object sender, EventArgs e)
         {
             setting = Setting.GetSetting();
+        }
+
+        private void btnService_Click(object sender, EventArgs e)
+        {
+            string path = Path.GetDirectoryName(Application.ExecutablePath);
+            string bat = Path.Combine(path, "service");
+            try
+            {
+                Process.Start(bat);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnSysmac_Click(object sender, EventArgs e)
+        {
+            Process.Start(@"C:\Program Files (x86)\OMRON\SYSMAC Gateway\bin\CIPCoreConsole.exe");
+        }
+
+        private void btnInternet_Click(object sender, EventArgs e)
+        {
+            bool check_ip = checkInternet(lblIP.Text);
+            if (check_ip)
+            {
+                btnIP.BackColor = Color.GreenYellow;
+            }
+            else
+            {
+                btnIP.BackColor = Color.Red;
+            }
+        }
+        public bool checkInternet(string ip)
+        {
+
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    //PRODUCTION
+                    using (client.OpenRead(ip))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
