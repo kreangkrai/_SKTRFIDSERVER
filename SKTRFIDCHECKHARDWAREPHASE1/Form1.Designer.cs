@@ -45,19 +45,19 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnIdent0_1 = new System.Windows.Forms.Button();
             this.btnRFIDCheck1 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnSysmac = new System.Windows.Forms.Button();
+            this.btnService = new System.Windows.Forms.Button();
             this.btnPLC1 = new System.Windows.Forms.Button();
             this.lblPLCIP1 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.btnPLCCheck1 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.lblPhase = new System.Windows.Forms.Label();
-            this.btnService = new System.Windows.Forms.Button();
-            this.btnSysmac = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnIP = new System.Windows.Forms.Button();
             this.lblIP = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.btnInternet = new System.Windows.Forms.Button();
-            this.btnIP = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -271,6 +271,34 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "PLC";
             // 
+            // btnSysmac
+            // 
+            this.btnSysmac.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.btnSysmac.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnSysmac.Font = new System.Drawing.Font("Angsana New", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSysmac.Location = new System.Drawing.Point(494, 34);
+            this.btnSysmac.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSysmac.Name = "btnSysmac";
+            this.btnSysmac.Size = new System.Drawing.Size(169, 73);
+            this.btnSysmac.TabIndex = 19;
+            this.btnSysmac.Text = "SYSMAC Gateway";
+            this.btnSysmac.UseVisualStyleBackColor = false;
+            this.btnSysmac.Click += new System.EventHandler(this.btnSysmac_Click);
+            // 
+            // btnService
+            // 
+            this.btnService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.btnService.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnService.Font = new System.Drawing.Font("Angsana New", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnService.Location = new System.Drawing.Point(334, 34);
+            this.btnService.Margin = new System.Windows.Forms.Padding(2);
+            this.btnService.Name = "btnService";
+            this.btnService.Size = new System.Drawing.Size(156, 73);
+            this.btnService.TabIndex = 18;
+            this.btnService.Text = "Restart Service";
+            this.btnService.UseVisualStyleBackColor = false;
+            this.btnService.Click += new System.EventHandler(this.btnService_Click);
+            // 
             // btnPLC1
             // 
             this.btnPLC1.BackColor = System.Drawing.Color.White;
@@ -339,34 +367,6 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.lblPhase.TabIndex = 3;
             this.lblPhase.Text = "2";
             // 
-            // btnService
-            // 
-            this.btnService.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.btnService.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnService.Font = new System.Drawing.Font("Angsana New", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnService.Location = new System.Drawing.Point(334, 34);
-            this.btnService.Margin = new System.Windows.Forms.Padding(2);
-            this.btnService.Name = "btnService";
-            this.btnService.Size = new System.Drawing.Size(156, 73);
-            this.btnService.TabIndex = 18;
-            this.btnService.Text = "Restart Service";
-            this.btnService.UseVisualStyleBackColor = false;
-            this.btnService.Click += new System.EventHandler(this.btnService_Click);
-            // 
-            // btnSysmac
-            // 
-            this.btnSysmac.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.btnSysmac.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSysmac.Font = new System.Drawing.Font("Angsana New", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSysmac.Location = new System.Drawing.Point(494, 36);
-            this.btnSysmac.Margin = new System.Windows.Forms.Padding(2);
-            this.btnSysmac.Name = "btnSysmac";
-            this.btnSysmac.Size = new System.Drawing.Size(169, 73);
-            this.btnSysmac.TabIndex = 19;
-            this.btnSysmac.Text = "SYSMAC Gateway";
-            this.btnSysmac.UseVisualStyleBackColor = false;
-            this.btnSysmac.Click += new System.EventHandler(this.btnSysmac_Click);
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.btnIP);
@@ -382,6 +382,18 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "INTERNET";
+            // 
+            // btnIP
+            // 
+            this.btnIP.BackColor = System.Drawing.Color.White;
+            this.btnIP.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnIP.Location = new System.Drawing.Point(190, 38);
+            this.btnIP.Margin = new System.Windows.Forms.Padding(2);
+            this.btnIP.Name = "btnIP";
+            this.btnIP.Size = new System.Drawing.Size(120, 73);
+            this.btnIP.TabIndex = 18;
+            this.btnIP.Text = "Server";
+            this.btnIP.UseVisualStyleBackColor = false;
             // 
             // lblIP
             // 
@@ -416,18 +428,6 @@ namespace SKTRFIDCHECKHARDWAREPHASE
             this.btnInternet.Text = "ตรวจสอบตัวที่ 1";
             this.btnInternet.UseVisualStyleBackColor = false;
             this.btnInternet.Click += new System.EventHandler(this.btnInternet_Click);
-            // 
-            // btnIP
-            // 
-            this.btnIP.BackColor = System.Drawing.Color.White;
-            this.btnIP.Font = new System.Drawing.Font("Angsana New", 30F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnIP.Location = new System.Drawing.Point(190, 38);
-            this.btnIP.Margin = new System.Windows.Forms.Padding(2);
-            this.btnIP.Name = "btnIP";
-            this.btnIP.Size = new System.Drawing.Size(120, 73);
-            this.btnIP.TabIndex = 18;
-            this.btnIP.Text = "Server";
-            this.btnIP.UseVisualStyleBackColor = false;
             // 
             // Form1
             // 
