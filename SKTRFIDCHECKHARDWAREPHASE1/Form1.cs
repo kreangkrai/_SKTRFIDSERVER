@@ -61,6 +61,11 @@ namespace SKTRFIDCHECKHARDWAREPHASE
                 btnPLC1.BackColor = Color.Red;
             }
 
+            if (cj2.IsConnected)
+            {
+                cj2.Active = false;
+                cj2.Dispose();
+            }
         }
 
        
