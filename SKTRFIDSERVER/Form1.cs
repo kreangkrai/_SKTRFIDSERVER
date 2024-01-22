@@ -353,9 +353,10 @@ namespace SKTRFIDSERVER
                                         cj2.Active = false;
                                         cj2.Dispose();
                                     }
-                                    catch
+                                    catch(Exception ex)
                                     {
-
+                                        string loca = @"D:\log_plc.txt";
+                                        File.AppendAllText(loca, DateTime.Now + " DUMP " + dump + " " +  ex.Message + " " + Environment.NewLine);
                                     }
                                     #endregion Read Only
 
