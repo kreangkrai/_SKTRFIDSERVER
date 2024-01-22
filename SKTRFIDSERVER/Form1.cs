@@ -356,7 +356,7 @@ namespace SKTRFIDSERVER
                                     catch(Exception ex)
                                     {
                                         string loca = @"D:\log_plc.txt";
-                                        File.AppendAllText(loca, DateTime.Now + " DUMP " + dump + " " +  ex.Message + " " + Environment.NewLine);
+                                        File.AppendAllText(loca, DateTime.Now + " RFID DUMP " + dump.ToString() + " " +  ex.Message + " " + Environment.NewLine);
                                     }
                                     #endregion Read Only
 
