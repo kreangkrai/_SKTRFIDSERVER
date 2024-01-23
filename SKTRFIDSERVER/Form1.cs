@@ -58,9 +58,8 @@ namespace SKTRFIDSERVER
         string queue_status = string.Empty;
         string dump_no = string.Empty;
 
-        //bool check_tag_original = true;
+        string last_rfid_code = "";
 
-        string queue_trig = string.Empty;
         DataModel data_dump = new DataModel();
         public Form1(string _mode ,string _server, string _dump,string _phase)
         {
@@ -172,9 +171,10 @@ namespace SKTRFIDSERVER
                         #region SCAN TAG
 
                         bool status_scan = false;
-
+                        bool status_call_api = false;
                         while (!status_scan)
                         {
+                            Thread.Sleep(500);
                             try
                             {
                                 SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
@@ -213,7 +213,7 @@ namespace SKTRFIDSERVER
                                     else // Valid RFID
                                     {
                                         if (tag_id.Length == 24) // Check Valid RFID Card  24 Charector
-                                        {                                          
+                                        {
                                             rfid_code = tag_id.Substring(0, 4);
                                             license_plate = tag_id.Substring(4, 10);
                                             truck_type = tag_id.Substring(14, 1);
@@ -258,23 +258,33 @@ namespace SKTRFIDSERVER
                                         if (CheckInternet)  // Online Read data from api
                                         {
                                             // Call Data From API
-                                            rfid = await API.CallAPI(data_dump);
-                                            Thread.Sleep(200);
-                                            if (rfid.Data.Count > 0)
+                                            if (last_rfid_code != rfid_code)
                                             {
-                                                if (rfid.Data[0].Barcode != "1") // Check Valid Barcode
+                                                status_call_api = false;
+                                            }
+
+                                            if (!status_call_api)
+                                            {
+                                                rfid = await API.CallAPI(data_dump);
+                                                Thread.Sleep(200);
+                                                if (rfid.Data.Count > 0)
+                                                {                                                   
+                                                    if (rfid.Data[0].Barcode != "1") // Check Valid Barcode
+                                                    {
+                                                        status_call_api = true;
+                                                        //Update Value from API
+                                                        weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
+                                                        cane_type = rfid.Data[0].CaneType;
+                                                    }
+                                                }
+                                                else
                                                 {
-                                                    //Update Value from API
-                                                    weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
-                                                    cane_type = rfid.Data[0].CaneType;
+                                                    // Offline Read From RFID Card
+                                                    rfid = Accessory.ReadRFIDCard(tag_id);
                                                 }
                                             }
-                                            else
-                                            {
-                                                // Offline Read From RFID Card
-                                                rfid = Accessory.ReadRFIDCard(tag_id);
-                                            }
                                         }
+
                                         else // Offline Read From RFID Card
                                         {
                                             rfid = Accessory.ReadRFIDCard(tag_id);
@@ -294,7 +304,7 @@ namespace SKTRFIDSERVER
                                         cj2.ReceiveTimeLimit = (long)5000;
                                         cj2.Active = true;
 
-                                        Thread.Sleep(1000);
+                                        Thread.Sleep(500);
 
                                         // Send Data To PLC
 
@@ -347,6 +357,7 @@ namespace SKTRFIDSERVER
                                                                                         "Bar_ID13" };
                                             cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
                                         }
+
                                         status_scan = true;
 
                                         //Release All Resource CJ2
@@ -482,6 +493,9 @@ namespace SKTRFIDSERVER
                                     //}
 
                                     //#endregion WRITE TAG
+
+                                    //Keep Last RFID Code
+                                    last_rfid_code = rfid_code;
                                 }
                             }
                             catch(Exception ex)
