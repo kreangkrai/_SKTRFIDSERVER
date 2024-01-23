@@ -484,9 +484,10 @@ namespace SKTRFIDSERVER
                                     //#endregion WRITE TAG
                                 }
                             }
-                            catch
+                            catch(Exception ex)
                             {
-
+                                string loca = @"D:\log.txt";
+                                File.AppendAllText(loca, server + " " + dump + " " + DateTime.Now + " " + ex.Message + Environment.NewLine);
                             }
                         }
 
