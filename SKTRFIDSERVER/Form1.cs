@@ -301,7 +301,7 @@ namespace SKTRFIDSERVER
                                         cj2.UseRoutePath = false;
                                         cj2.PeerAddress = Setting.ip_plc;
                                         cj2.LocalPort = 2;
-                                        cj2.ReceiveTimeLimit = (long)5000;
+                                        cj2.ReceiveTimeLimit = (long)2000;
                                         cj2.Active = true;
 
                                         Thread.Sleep(500);
@@ -368,6 +368,9 @@ namespace SKTRFIDSERVER
                                     {
                                         string loca = @"D:\log_plc.txt";
                                         File.AppendAllText(loca, DateTime.Now + " RFID DUMP " + dump.ToString() + " " +  ex.Message + " " + Environment.NewLine);
+
+                                        OpcUaService.Instance.Disconnect();
+                                        this.Close();
                                     }
                                     #endregion Read Only
 
@@ -419,6 +422,7 @@ namespace SKTRFIDSERVER
                                     //                            cj2.UseRoutePath = false;
                                     //                            cj2.PeerAddress = Setting.ip_plc;
                                     //                            cj2.LocalPort = 2;
+                                    //                            cj2.ReceiveTimeLimit = (long)2000;
                                     //                            cj2.Active = true;
 
                                     //                            Thread.Sleep(1000);
@@ -478,9 +482,13 @@ namespace SKTRFIDSERVER
                                     //                            cj2.Active = false;
                                     //                            cj2.Dispose();
                                     //                        }
-                                    //                        catch
+                                    //                        catch(Exception ex)
                                     //                        {
+                                    //                          string loca = @"D:\log_plc.txt";
+                                    //                          File.AppendAllText(loca, DateTime.Now + " RFID DUMP " + dump.ToString() + " " + ex.Message + " " + Environment.NewLine);
 
+                                    //                          OpcUaService.Instance.Disconnect();
+                                    //                          this.Close();
                                     //                        }
                                     //                    }
                                     //                }
