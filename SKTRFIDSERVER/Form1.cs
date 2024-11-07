@@ -715,7 +715,13 @@ namespace SKTRFIDSERVER
                     }
 
                     //Update Allergen to API
-                    await API.UpdateAlled(setting.area_id.ToString(), setting.crop_year, rfid.Data[0].Barcode, alleD);
+                    ResultUpdateAlledModel dataUpdate = await API.UpdateAlled(setting.area_id.ToString(), setting.crop_year, rfid.Data[0].Barcode, alleD);
+
+                    if (dataUpdate.Data[0].StatusDb != 0) // Send Complete
+                    {
+                        string loca = @"D:\log_alled.txt";
+                        File.AppendAllText(loca, DateTime.Now + " Barcode " + rfid.Data[0].Barcode + " " + " Code " + dataUpdate.Data[0].StatusDb + " " + Environment.NewLine);
+                    }
                 }
 
                 // Update Allergen Local Database
