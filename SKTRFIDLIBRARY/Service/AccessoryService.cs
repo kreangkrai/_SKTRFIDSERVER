@@ -94,7 +94,7 @@ namespace SKTRFIDLIBRARY.Service
                 cane_type = Int32.Parse(cane_type),
                 barcode = int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString(),
                 queue_status = Int32.Parse(queue_status),
-                dump_id = Int32.Parse(dump_no)
+                dump_id = int.Parse(dump_no, System.Globalization.NumberStyles.HexNumber),
             };
             return data;
         }
