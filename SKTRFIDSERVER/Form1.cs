@@ -291,7 +291,7 @@ namespace SKTRFIDSERVER
                                         }
                                     }
 
-                                    //#region Read Only
+                                    #region Read Only
                                     //try
                                     //{
                                     //    //Read Only
@@ -372,7 +372,7 @@ namespace SKTRFIDSERVER
                                     //    OpcUaService.Instance.Disconnect();
                                     //    this.Close();
                                     //}
-                                    //#endregion Read Only
+                                    #endregion Read Only
 
                                     #region WRITE TAG
                                     //string data_write = tag_id;
@@ -526,9 +526,11 @@ namespace SKTRFIDSERVER
                         dataDump.truck_number = rfid.Data[0].TruckNumber;
                         dataDump.farmer_name = rfid.Data[0].FarmerName;
                         dataDump.rfid_lastdate = now;
-                        dataDump.cane_type = Convert.ToInt32(rfid.Data[0].CaneType);
+                        //dataDump.cane_type = Convert.ToInt32(rfid.Data[0].CaneType);
+                        dataDump.cane_type = Convert.ToInt32(cane_type);
                         dataDump.allergen = rfid.Data[0].Allergen;
-                        dataDump.barcode = rfid.Data[0].Barcode;
+                        //dataDump.barcode = rfid.Data[0].Barcode;
+                        dataDump.barcode = int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString();
                         dataDump.truck_type = Convert.ToInt32(truck_type);
                         dataDump.weight_type = Convert.ToInt32(weight_type);
                         dataDump.queue_status = 3;
