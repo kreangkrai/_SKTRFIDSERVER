@@ -281,6 +281,8 @@ namespace SKTRFIDSERVER
                                                 {
                                                     // Offline Read From RFID Card
                                                     rfid = Accessory.ReadRFIDCard(tag_id);
+                                                    string loca = @"D:\log_offline_rfid.txt";
+                                                    File.AppendAllText(loca, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " Dump " + dump + " " + Environment.NewLine);
                                                 }
                                             }
                                         }
@@ -288,6 +290,8 @@ namespace SKTRFIDSERVER
                                         else // Offline Read From RFID Card
                                         {
                                             rfid = Accessory.ReadRFIDCard(tag_id);
+                                            string loca = @"D:\log_offline_rfid.txt";
+                                            File.AppendAllText(loca, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " Dump " + dump + " " + Environment.NewLine);
                                         }
                                     }
 
