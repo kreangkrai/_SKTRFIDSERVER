@@ -540,6 +540,10 @@ namespace SKTRFIDSERVER
                         dataDump.queue_status = 3;
                         string message_update = RFID.UpdateRFID(dataDump);
 
+                        //Log Scan
+                        string loc = @"D:\log_scan.txt";
+                        File.AppendAllText(loc, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " DUMP " + dump + " " + Environment.NewLine);
+
                         #region Allergen
 
                         //Check Allergen
