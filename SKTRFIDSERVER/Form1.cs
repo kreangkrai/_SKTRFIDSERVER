@@ -275,6 +275,10 @@ namespace SKTRFIDSERVER
                                                         //Update Value from API
                                                         weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
                                                         cane_type = rfid.Data[0].CaneType;
+
+                                                        //Log Call API
+                                                        string loc1 = @"D:\log_call_api.txt";
+                                                        File.AppendAllText(loc1, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " DUMP " + dump + " Code " +rfid.Data[0].StatusDb + " "  + Environment.NewLine);
                                                     }
                                                 }
                                                 else
