@@ -58,7 +58,7 @@ namespace SKTRFIDSERVER
         string queue_status = string.Empty;
         string dump_no = string.Empty;
 
-        string last_rfid_code = "";
+        string last_rfid_code = string.Empty;
 
         DataModel data_dump = new DataModel();
         public Form1(string _mode ,string _server, string _dump,string _phase)
@@ -297,6 +297,9 @@ namespace SKTRFIDSERVER
                                             string loca = @"D:\log_offline_rfid.txt";
                                             File.AppendAllText(loca, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " Dump " + dump + " " + Environment.NewLine);
                                         }
+
+                                        //Keep Last RFID Code
+                                        last_rfid_code = rfid_code;
                                     }
 
                                     #region Read Only
@@ -508,10 +511,7 @@ namespace SKTRFIDSERVER
                                         }
                                     }
 
-                                    #endregion WRITE TAG
-
-                                    //Keep Last RFID Code
-                                    last_rfid_code = rfid_code;
+                                    #endregion WRITE TAG                                   
                                 }
                             }
                             catch(Exception ex)
