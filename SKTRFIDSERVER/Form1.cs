@@ -217,7 +217,8 @@ namespace SKTRFIDSERVER
                                             rfid_code = tag_id.Substring(0, 4);
                                             license_plate = tag_id.Substring(4, 10);
                                             truck_type = tag_id.Substring(14, 1);
-                                            weight_code = tag_id.Substring(15, 5);
+                                            //weight_code = tag_id.Substring(15, 5);
+                                            weight_code = "0";
                                             cane_type = tag_id.Substring(20, 1);
                                             weight_type = tag_id.Substring(21, 1);
                                             queue_status = tag_id.Substring(22, 1);
