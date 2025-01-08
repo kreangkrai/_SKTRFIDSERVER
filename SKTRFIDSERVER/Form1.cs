@@ -32,6 +32,7 @@ namespace SKTRFIDSERVER
         static RfidTag SelectedTag = null;
         Reader readers = null;
         private IRFID RFID;
+        private IAPIDB APIDB;
         CJ2Compolet cj2;
         private ISetting Settings;
         private IAPI API;
@@ -69,6 +70,7 @@ namespace SKTRFIDSERVER
             server = _server;
             phase = Convert.ToInt32(_phase);
             RFID = new RFIDService(phase);
+            APIDB = new APIDBService(phase);
             Settings = new SettingService(phase);
             rfid = new RFIDModel();
             API = new APIService();
@@ -217,8 +219,7 @@ namespace SKTRFIDSERVER
                                             rfid_code = tag_id.Substring(0, 4);
                                             license_plate = tag_id.Substring(4, 10);
                                             truck_type = tag_id.Substring(14, 1);
-                                            //weight_code = tag_id.Substring(15, 5);
-                                            weight_code = "0";
+                                            weight_code = tag_id.Substring(15, 5);
                                             cane_type = tag_id.Substring(20, 1);
                                             weight_type = tag_id.Substring(21, 1);
                                             queue_status = tag_id.Substring(22, 1);
@@ -276,6 +277,15 @@ namespace SKTRFIDSERVER
                                                         //Update Value from API
                                                         weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
                                                         cane_type = rfid.Data[0].CaneType;
+
+                                                        //Update API Database
+                                                        DataAPIModel data_api = new DataAPIModel()
+                                                        {
+                                                            dump_id = dump.ToString(),
+                                                            barcode = rfid.Data[0].Barcode,
+                                                            date = DateTime.Now
+                                                        };
+                                                        string msg = APIDB.UpdateAPI(data_api);
 
                                                         //Log Call API
                                                         string loc1 = @"D:\log_call_api.txt";
@@ -524,6 +534,9 @@ namespace SKTRFIDSERVER
 
                         #endregion SCAN TAG
 
+                        //Get Last API
+                        DataAPIModel data_api_dump = APIDB.GetAPIByDump(dump.ToString());
+
                         DateTime now = DateTime.Now;
 
                         //Update Data to Local Database
@@ -538,12 +551,21 @@ namespace SKTRFIDSERVER
                         //dataDump.cane_type = Convert.ToInt32(rfid.Data[0].CaneType);
                         dataDump.cane_type = Convert.ToInt32(cane_type);
                         dataDump.allergen = rfid.Data[0].Allergen;
-                        //dataDump.barcode = rfid.Data[0].Barcode;
-                        dataDump.barcode = int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString();
+                        dataDump.barcode = data_api_dump.barcode;
+                        //dataDump.barcode = int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString();
                         dataDump.truck_type = Convert.ToInt32(truck_type);
                         dataDump.weight_type = Convert.ToInt32(weight_type);
                         dataDump.queue_status = 3;
                         string message_update = RFID.UpdateRFID(dataDump);
+
+                        // Clear Barcode API
+                        DataAPIModel data_api_clear = new DataAPIModel()
+                        {
+                            barcode = "0",
+                            dump_id = dump.ToString(),
+                            date = DateTime.Now
+                        };
+                        string msg_clear = APIDB.UpdateAPI(data_api_clear);
 
                         //Log Scan
                         string loc = @"D:\log_scan.txt";
