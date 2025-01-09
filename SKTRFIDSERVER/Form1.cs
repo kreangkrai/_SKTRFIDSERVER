@@ -171,7 +171,7 @@ namespace SKTRFIDSERVER
                         Reader SelectedReader = new Reader(readers.NodeId, readers.Ident, readers.Type, readers.Name);
 
                         #region SCAN TAG
-
+                        DataAPIModel data_api_dump = new DataAPIModel();
                         bool status_scan = false;
                         bool status_call_api = false;
                         while (!status_scan)
@@ -268,14 +268,14 @@ namespace SKTRFIDSERVER
                                             if (!status_call_api)
                                             {
                                                 rfid = await API.CallAPI(data_dump);
-                                                Thread.Sleep(200);
+                                                Thread.Sleep(250);
                                                 if (rfid.Data.Count > 0)
                                                 {                                                   
                                                     if (rfid.Data[0].Barcode != "1") // Check Valid Barcode
                                                     {
                                                         status_call_api = true;
                                                         //Update Value from API
-                                                        weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
+                                                        //weight_code = Int32.Parse(rfid.Data[0].Barcode).ToString("x").ToUpper(); // Barcode Convert int to hex
                                                         cane_type = rfid.Data[0].CaneType;
 
                                                         //Update API Database
@@ -287,6 +287,7 @@ namespace SKTRFIDSERVER
                                                         };
                                                         string msg = APIDB.UpdateAPI(data_api);
 
+                                                        Thread.Sleep(50);
                                                         //Log Call API
                                                         string loc1 = @"D:\log_call_api.txt";
                                                         File.AppendAllText(loc1, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " DUMP " + dump + " Code " +rfid.Data[0].StatusDb + " "  + Environment.NewLine);
@@ -312,6 +313,9 @@ namespace SKTRFIDSERVER
                                         //Keep Last RFID Code
                                         last_rfid_code = rfid_code;
                                     }
+
+                                    //Get Last API
+                                    data_api_dump = APIDB.GetAPIByDump(dump.ToString());
 
                                     #region Read Only
                                     //try
@@ -353,7 +357,8 @@ namespace SKTRFIDSERVER
                                     //                                                    "Bar_ID5" ,
                                     //                                                    "Bar_ID6" ,
                                     //                                                    "Bar_ID7" };
-                                    //        cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                    ////        cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                    //      cj2.WriteVariable(dump_plc_Barcode[dump - 1], data_api_dump.barcode);
                                     //    }
 
                                     //    if (phase == 2)
@@ -377,7 +382,8 @@ namespace SKTRFIDSERVER
                                     //                                                    "Bar_ID11" ,
                                     //                                                    "Bar_ID12" ,
                                     //                                                    "Bar_ID13" };
-                                    //        cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                    ////      cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                    //        cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], data_api_dump.barcode);
                                     //    }
 
                                     //    status_scan = true;
@@ -472,7 +478,8 @@ namespace SKTRFIDSERVER
                                                                                                                 "Bar_ID5" ,
                                                                                                                 "Bar_ID6" ,
                                                                                                                 "Bar_ID7" };
-                                                                    cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                                                    //cj2.WriteVariable(dump_plc_Barcode[dump - 1], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                                                    cj2.WriteVariable(dump_plc_Barcode[dump - 1], data_api_dump.barcode);
                                                                 }
 
                                                                 if (phase == 2)
@@ -496,7 +503,8 @@ namespace SKTRFIDSERVER
                                                                                                                 "Bar_ID11" ,
                                                                                                                 "Bar_ID12" ,
                                                                                                                 "Bar_ID13" };
-                                                                    cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                                                    //cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], int.Parse(weight_code, System.Globalization.NumberStyles.HexNumber).ToString());
+                                                                    cj2.WriteVariable(dump_plc_Barcode[dump - (1 + 7)], data_api_dump.barcode);
                                                                 }
                                                                 status_scan = true;
 
@@ -533,10 +541,7 @@ namespace SKTRFIDSERVER
                         }
 
                         #endregion SCAN TAG
-
-                        //Get Last API
-                        DataAPIModel data_api_dump = APIDB.GetAPIByDump(dump.ToString());
-
+                      
                         DateTime now = DateTime.Now;
 
                         //Update Data to Local Database
@@ -566,6 +571,8 @@ namespace SKTRFIDSERVER
                             date = DateTime.Now
                         };
                         string msg_clear = APIDB.UpdateAPI(data_api_clear);
+
+                        Thread.Sleep(50);
 
                         //Log Scan
                         string loc = @"D:\log_scan.txt";
