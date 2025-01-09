@@ -32,7 +32,7 @@ namespace SKTRFIDLIBRARY.Service
             {
                 using (SqlConnection cn = new SqlConnection(connectionString))
                 {
-                    SqlCommand cmd = new SqlCommand($@"SELECT dump_id,barcode,date FROM tb_api where dump_id='{dump}", cn);
+                    SqlCommand cmd = new SqlCommand($@"SELECT dump_id,barcode,date FROM tb_api where dump_id='{dump}'", cn);
                     if (cn.State == ConnectionState.Closed)
                     {
                         cn.Open();
@@ -68,7 +68,7 @@ namespace SKTRFIDLIBRARY.Service
                         cn.Open();
                     }
                     SqlCommand cmd = new SqlCommand($@"UPDATE tb_api SET barcode=N'{data.barcode}',
-                                                                          date='{data.date}'        
+                                                                          date='{data.date}'       
                                                                           WHERE dump_id='{data.dump_id}'", cn);
                     cmd.ExecuteNonQuery();
                 }
