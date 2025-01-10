@@ -53,7 +53,7 @@ namespace SKTRFIDSERVER
         string rfid_code = string.Empty;
         string license_plate = string.Empty;
         string truck_type = string.Empty;
-        string weight_code = string.Empty;
+        //string weight_code = string.Empty;
         string cane_type = string.Empty;
         string weight_type = string.Empty;
         string queue_status = string.Empty;
@@ -219,7 +219,7 @@ namespace SKTRFIDSERVER
                                             rfid_code = tag_id.Substring(0, 4);
                                             license_plate = tag_id.Substring(4, 10);
                                             truck_type = tag_id.Substring(14, 1);
-                                            weight_code = tag_id.Substring(15, 5);
+                                            //weight_code = tag_id.Substring(15, 5);
                                             cane_type = tag_id.Substring(20, 1);
                                             weight_type = tag_id.Substring(21, 1);
                                             queue_status = tag_id.Substring(22, 1);
@@ -296,7 +296,7 @@ namespace SKTRFIDSERVER
                                                 else
                                                 {
                                                     // Offline Read From RFID Card
-                                                    rfid = Accessory.ReadRFIDCard(tag_id);
+                                                    //rfid = Accessory.ReadRFIDCard(tag_id);
                                                     string loca = @"D:\log_offline_rfid.txt";
                                                     File.AppendAllText(loca, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " Dump " + dump + " " + Environment.NewLine);
                                                 }
@@ -305,7 +305,7 @@ namespace SKTRFIDSERVER
 
                                         else // Offline Read From RFID Card
                                         {
-                                            rfid = Accessory.ReadRFIDCard(tag_id);
+                                            //rfid = Accessory.ReadRFIDCard(tag_id);
                                             string loca = @"D:\log_offline_rfid.txt";
                                             File.AppendAllText(loca, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " Dump " + dump + " " + Environment.NewLine);
                                         }
