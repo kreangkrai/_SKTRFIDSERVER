@@ -296,7 +296,16 @@ namespace SKTRFIDSERVER
                                                 else
                                                 {
                                                     // Offline Read From RFID Card
-                                                    //rfid = Accessory.ReadRFIDCard(tag_id);
+                                                    rfid = Accessory.ReadRFIDCard(tag_id);
+                                                    //Update API Database
+                                                    DataAPIModel data_api = new DataAPIModel()
+                                                    {
+                                                        dump_id = dump.ToString(),
+                                                        barcode = rfid.Data[0].Barcode,
+                                                        date = DateTime.Now
+                                                    };
+                                                    string msg = APIDB.UpdateAPI(data_api);
+
                                                     string loca = @"D:\log_offline_rfid.txt";
                                                     File.AppendAllText(loca, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " Dump " + dump + " " + Environment.NewLine);
                                                 }
@@ -305,7 +314,17 @@ namespace SKTRFIDSERVER
 
                                         else // Offline Read From RFID Card
                                         {
-                                            //rfid = Accessory.ReadRFIDCard(tag_id);
+                                            rfid = Accessory.ReadRFIDCard(tag_id);
+
+                                            //Update API Database
+                                            DataAPIModel data_api = new DataAPIModel()
+                                            {
+                                                dump_id = dump.ToString(),
+                                                barcode = rfid.Data[0].Barcode,
+                                                date = DateTime.Now
+                                            };
+                                            string msg = APIDB.UpdateAPI(data_api);
+
                                             string loca = @"D:\log_offline_rfid.txt";
                                             File.AppendAllText(loca, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " Dump " + dump + " " + Environment.NewLine);
                                         }
@@ -590,13 +609,16 @@ namespace SKTRFIDSERVER
                         {
                             //Call Form Alert Allergen
                             SettingModel setting = Settings.GetSetting();
-                            //Update Allergen to API
-                            ResultUpdateAlledModel dataUpdate = await API.UpdateAlled(setting.area_id.ToString(), setting.crop_year, rfid.Data[0].Barcode, "0");
-
-                            if (dataUpdate.Data[0].StatusDb != 0) // Send Complete
+                            if (CheckInternet)
                             {
-                                string loca = @"D:\log_alled.txt";
-                                File.AppendAllText(loca, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " DUMP " + dump + " Code " + dataUpdate.Data[0].StatusDb + " " + Environment.NewLine);
+                                //Update Allergen to API
+                                ResultUpdateAlledModel dataUpdate = await API.UpdateAlled(setting.area_id.ToString(), setting.crop_year, rfid.Data[0].Barcode, "0");
+
+                                if (dataUpdate.Data[0].StatusDb != 0) // Send Complete
+                                {
+                                    string loca = @"D:\log_alled.txt";
+                                    File.AppendAllText(loca, DateTime.Now + " RFID " + data_dump.rfid + " Barcode " + rfid.Data[0].Barcode + " DUMP " + dump + " Code " + dataUpdate.Data[0].StatusDb + " " + Environment.NewLine);
+                                }
                             }
                         }
 
